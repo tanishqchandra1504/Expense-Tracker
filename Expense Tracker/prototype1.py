@@ -19,7 +19,7 @@ def main(page:Page):
             controls=[Row(alignment='spaceBetween',
                         controls=[IconButton(on_click=lambda e:shrink(e),
                                             content=Icon(icons.ARROW_FORWARD)),
-                                  IconButton(on_click=lambda _:page.go('/create_task'),
+                                  IconButton(on_click=lambda _:page.go('/Dataput'),
                                             content=Icon(icons.ADD))]
                                             )
                                         ]
