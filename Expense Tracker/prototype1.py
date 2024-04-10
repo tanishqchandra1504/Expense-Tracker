@@ -1,6 +1,6 @@
 import flet
 from flet import *
-
+import datetime
 
 
 def main(page:Page):
@@ -107,22 +107,91 @@ def main(page:Page):
                                 )
                             ]
                         )
-    
+    #.controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
     Analysis_Contents=Row(
         controls=[Container(expand=True,
                             bgcolor=FG,
-                            padding=padding.only(top=50,left=20,
-                                     right=20,bottom=5),
-                                     content=Column(controls=[
-                                                    Row(
-                                                    controls=[IconButton(on_click=lambda _:page.go('/'),
-                                  content=Icon(icons.CLOSE_ROUNDED))])
-                                        
+                            padding=padding.only(top=50,left=20,right=20,bottom=5),
+                            content=Column(controls=[
+                                            Row(
+                                                controls=[
+                                                    IconButton(
+                                                        on_click=lambda _:page.go('/'),
+                                                        content=Icon(icons.CLOSE_ROUNDED)
+                                                    )
+
+                                                ]
+                                            ),
+
+                                            #daily
+                                            Row(
+                                                alignment=MainAxisAlignment.CENTER,
+                                                controls=[
+                                                    Card(
+                                                        width=210,
+                                                        height=50,
+                                                        color='blue',
+                                                        content=(
+                                                            Row(
+                                                                controls=[
+                                                                    IconButton(
+                                                                        width=30,
+                                                                        content=Icon(icons.ARROW_BACK_IOS),
+                                                                    ),
+                                                                    TextButton(
+                                                                        width=120,
+                                                                        content=Text(datetime.datetime.now().strftime("%d %m %y")),
+                                                                        # text=date_picker.value,
+                                                                        on_click=lambda _: date_picker.pick_date(),
+
+
+
+                                                                    ),
+                                                                    IconButton(
+                                                                        width=30,
+                                                                        content=Icon(icons.ARROW_FORWARD_IOS),
+                                                                    )
+                                                                ]
+                                                            )
+                                                        )
+                                                    ),
+                                                    
+                                            ]),
+
+                                            Container(
+                                                        width=200,
+                                                        height=200,
+
+                                                        #graph
+                                                    ),
+
+                                            Column(
+                                                controls=[
+                                                    Container(
+                                                        width=200,
+                                                        height=100,
+                                                        border=border.all(0.85, "white54"),
+                                                        border_radius=8,
+                                                        # color="bluegrey",
+                                                        content=(
+                                                            Row(
+                                                                alignment=MainAxisAlignment.SPACE_BETWEEN,
+                                                                controls=[
+                                                                    #cate color, cate name, amount
+                                                                    
+                                                                ]
+                                                            )
+                                                        ),
+
+                                                    ),
+                                                ]
+                                                
+                                            )
                                         ]
                                     )
-                                )
-                            ]
                         )
+            ]
+        )
     
     Settings_Contents=Row(
         controls=[Container(expand=True,
@@ -212,8 +281,22 @@ def main(page:Page):
         page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
         page.update()
 
+    def change_date(e):
+        # page.views[-1].controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
+        Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=(date_picker.value.strftime("%d %m %y"))
+        page.update()
+        pass
+    
+    date_picker = DatePicker(
+        on_change=change_date,
+        on_dismiss=lambda _:print("hello"),
+        first_date=datetime.datetime(2024,1,1),
+        last_date=datetime.datetime.today(),
+    )
+
     
     page.on_route_change= change_route #when the route changes this function is called
+    page.overlay.append(date_picker)
 
 
 
