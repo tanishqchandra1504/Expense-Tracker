@@ -130,18 +130,19 @@ def main(page:Page):
                                                     Card(
                                                         width=210,
                                                         height=50,
-                                                        color='blue',
+                                                        color=BG,
                                                         content=(
                                                             Row(
                                                                 controls=[
                                                                     IconButton(
                                                                         width=30,
                                                                         content=Icon(icons.ARROW_BACK_IOS),
+                                                                        on_click=lambda _ : previous_date(),
                                                                     ),
                                                                     TextButton(
                                                                         width=120,
-                                                                        content=Text(datetime.datetime.now().strftime("%d %m %y")),
-                                                                        # text=date_picker.value,
+                                                                        content=Text(datetime.datetime.now().strftime("%d %m %Y")),
+                                                                        # content=date_picker.value,
                                                                         on_click=lambda _: date_picker.pick_date(),
 
 
@@ -150,12 +151,12 @@ def main(page:Page):
                                                                     IconButton(
                                                                         width=30,
                                                                         content=Icon(icons.ARROW_FORWARD_IOS),
+                                                                        on_click=lambda _ : next_date(),
                                                                     )
                                                                 ]
                                                             )
                                                         )
                                                     ),
-                                                    
                                             ]),
 
                                             Container(
@@ -167,23 +168,50 @@ def main(page:Page):
 
                                             Column(
                                                 controls=[
-                                                    Container(
-                                                        width=200,
-                                                        height=100,
-                                                        border=border.all(0.85, "white54"),
-                                                        border_radius=8,
-                                                        # color="bluegrey",
-                                                        content=(
-                                                            Row(
-                                                                alignment=MainAxisAlignment.SPACE_BETWEEN,
-                                                                controls=[
-                                                                    #cate color, cate name, amount
-                                                                    
-                                                                ]
-                                                            )
-                                                        ),
-
+                                                    Row(
+                                                        controls=[
+                                                            Card(
+                                                                expand=True,
+                                                                height=100,
+                                                                # border=border.all(0.85, "white54"),
+                                                                # border_radius=8,
+                                                                color=BG,
+                                                                content=(
+                                                                    Row(
+                                                                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                                                                        controls=[
+                                                                            #cate color, cate name, amount
+                                                                            
+                                                                        ]
+                                                                    )
+                                                                ),
+                                                            ),
+                                                            
+                                                        ]
+                                                        
                                                     ),
+                                                    Row(
+                                                        controls=[
+                                                            Card(
+                                                                expand=True,
+                                                                height=100,
+                                                                # border=border.all(0.85, "white54"),
+                                                                # border_radius=8,
+                                                                color="bluegrey",
+                                                                content=(
+                                                                    Row(
+                                                                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                                                                        controls=[
+                                                                            #cate color, cate name, amount
+                                                                            
+                                                                        ]
+                                                                    )
+                                                                ),
+                                                            ),
+                                                            
+                                                        ]
+                                                        
+                                                    )
                                                 ]
                                                 
                                             )
@@ -281,18 +309,39 @@ def main(page:Page):
         page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
         page.update()
 
+
+
     def change_date(e):
         # page.views[-1].controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
-        Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=(date_picker.value.strftime("%d %m %y"))
+        Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=(date_picker.value.strftime("%d %m %Y"))
         page.update()
-        pass
     
     date_picker = DatePicker(
         on_change=change_date,
         on_dismiss=lambda _:print("hello"),
         first_date=datetime.datetime(2024,1,1),
+        current_date=datetime.datetime.today(),
         last_date=datetime.datetime.today(),
     )
+
+    def previous_date():
+
+        presentday_str='-'.join(list((Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value).split())[::-1])
+        presentday=datetime.datetime.fromisoformat(presentday_str)
+        yesterday = presentday - datetime.timedelta(1)
+        Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
+        page.update()
+    
+    def next_date():
+
+        presentday_str='-'.join(list((Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value).split())[::-1])
+        presentday=datetime.datetime.fromisoformat(presentday_str)
+        tomorrow = presentday + datetime.timedelta(1)
+        Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
+        page.update()
+
+
+
 
     
     page.on_route_change= change_route #when the route changes this function is called
