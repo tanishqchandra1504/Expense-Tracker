@@ -9,7 +9,8 @@ def main(page:Page):
     FG = '#3450a1'
     PINK = '#eb06ff'
 
-    conn=database.ConnectToDatabase()
+    # conn=database.ConnectToDatabase()
+
     page.padding=0
     date=datetime.datetime.now().strftime("%d %m %Y")
     month=date[3:5]
@@ -109,7 +110,6 @@ def main(page:Page):
                                 )
                             ]
                         )
-    #.controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
 
     analysis_dropdown=Dropdown(
         width=100,
@@ -327,6 +327,7 @@ def main(page:Page):
             ]
         )
 
+
     Analysis_Contents=Row(
         controls=[Container(expand=True,
                             bgcolor=FG,
@@ -397,7 +398,10 @@ def main(page:Page):
                         )
             ]
         )
-    
+
+
+    # Analysis_Contents=Analysis_Daily_Contents
+
     Settings_Contents=Row(
         controls=[Container(expand=True,
                             bgcolor=FG,
@@ -511,7 +515,7 @@ def main(page:Page):
         )
 
         Analysis_Contents.controls[0].content.controls[3].controls.append(Divider(thickness=3,color="black"))
-        for item in database.show_daily_expense(conn,date):
+        for item in database.show_daily_expense(database.ConnectToDatabase(),date):
                Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
@@ -563,7 +567,7 @@ def main(page:Page):
             )
         )
         Analysis_Contents.controls[0].content.controls[3].controls.append(Divider(thickness=3,color="black"))
-        for item in database.show_monthly_expense(conn,month):
+        for item in database.show_monthly_expense(database.ConnectToDatabase(),month):
             Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
@@ -676,9 +680,9 @@ def main(page:Page):
 
 
 
-    # show_daily_analysis(date)
+    show_daily_analysis(date)
     # show_daily_analysis(month)
-    # analysis_dropdown.value="Day"
+    analysis_dropdown.value="Day"
     # print(month)
 
     
