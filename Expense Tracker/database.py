@@ -68,7 +68,8 @@ def show_weekly_expense(conn,Week:int):
 
 def show_monthly_expense(conn,month:str):
     c=conn.cursor()
-    c.execute("SELECT * FROM expenses WHERE Date[3:5]=(?)",(month,))
+    c.execute("SELECT * FROM expenses WHERE SUBSTR(Date,4,2)=(?)",(month,))
+    return c.fetchall()
 
 def insert_expense(conn,data:tuple):
     # data=(category_name,amount,Date)
