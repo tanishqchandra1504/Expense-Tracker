@@ -28,7 +28,18 @@ def ConnectToDatabase():
     c=conn.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS categories(category_name text,color text)" )
     c.execute("CREATE TABLE IF NOT EXISTS expenses(category_name text,amount real, Date text,Week INTEGER)" )
+    c.execute("CREATE TABLE IF NOT EXISTS username(name text)")
     return conn
+
+def check_username(conn):
+    c=conn.cursor()
+    c.execute("SELECT * FROM username")
+    items=c.fetchall()
+    if len(items)==0:
+        print(True)
+    else:
+        print(False)
+
 
 def show_all_categories(conn):
     #conn=sqlite3.connect("")
@@ -94,5 +105,6 @@ def edit_expense(conn,data_old:tuple,data_new:tuple):
     conn.commmit()
 
 
+check_username(ConnectToDatabase())
 # print(show_weekly_expense(ConnectToDatabase(),1))
 
