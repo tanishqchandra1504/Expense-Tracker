@@ -36,9 +36,9 @@ def check_username(conn):
     c.execute("SELECT * FROM username")
     items=c.fetchall()
     if len(items)==0:
-        print(True)
+        return True
     else:
-        print(False)
+        return False
 
 
 def show_all_categories(conn):
@@ -67,19 +67,19 @@ def edit_category(conn,old_cat,new_cat):
 
 def show_daily_expense(conn,date:str):
     c=conn.cursor()
-    c.execute("SELECT * FROM expenses WHERE Date=(?)",(date,))
+    c.execute("SELECT * FROM expenses WHERE Date=(?) ORDER BY amount DESC",(date,))
     items=c.fetchall()
     return items
 
 def show_weekly_expense(conn,Week:int):
     c=conn.cursor()
-    c.execute("SELECT * FROM expenses WHERE Week=(?)",(Week,))
+    c.execute("SELECT * FROM expenses WHERE Week=(?) ORDER BY amount DESC",(Week,))
     items=c.fetchall()
     return items
 
 def show_monthly_expense(conn,month:str):
     c=conn.cursor()
-    c.execute("SELECT * FROM expenses WHERE SUBSTR(Date,4,2)=(?)",(month,))
+    c.execute("SELECT * FROM expenses WHERE SUBSTR(Date,4,2)=(?) ORDER BY amount DESC",(month,))
     return c.fetchall()
 
 def insert_expense(conn,data:tuple):
@@ -105,6 +105,6 @@ def edit_expense(conn,data_old:tuple,data_new:tuple):
     conn.commmit()
 
 
-check_username(ConnectToDatabase())
+# check_username(ConnectToDatabase())
 # print(show_weekly_expense(ConnectToDatabase(),1))
 

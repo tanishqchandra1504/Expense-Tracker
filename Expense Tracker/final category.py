@@ -226,7 +226,7 @@ def main(page: Page):
 
     category_input = TextField(hint_text="Enter new category", expand=True, on_submit=add_category)
     category_color_dropdown = Dropdown(
-        width=100,
+        width=125,
         options=dropdown_options
     )
 

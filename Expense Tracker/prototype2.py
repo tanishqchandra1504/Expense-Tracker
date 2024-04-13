@@ -11,6 +11,22 @@ def main(page:Page):
 
     # conn=database.ConnectToDatabase()
 
+    color_options = [
+        '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF',
+        '#FFA500', '#800080', '#008000', '#800000', '#008080', '#808000',
+        '#A52A2A', '#000080', '#808080', '#FFC0CB', '#800000', '#FF4500'
+    ]
+
+    color_names = [
+        'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta',
+        'Orange', 'Purple', 'Dark Green', 'Maroon', 'Teal', 'Olive',
+        'Brown', 'Navy', 'Gray', 'Pink', 'Maroon', 'Orange Red'
+    ]
+
+    dropdown_options = [
+        dropdown.Option(color_options[i], color_names[i]) for i in range(len(color_options))
+    ]
+
     page.padding=0
     date=datetime.datetime.now().strftime("%d %m %Y")
     month=date[3:5]
@@ -22,7 +38,7 @@ def main(page:Page):
             controls=[Row(alignment='spaceBetween',
                         controls=[IconButton(on_click=lambda e:shrink(e),
                                             content=Icon(icons.ARROW_FORWARD)),
-                                  IconButton(on_click=lambda _:page.go('/Dataput'),
+                                  IconButton(on_click=lambda _:page.go('/AddData'),
                                             content=Icon(icons.ADD))]
                                             )
                                         ]
@@ -79,22 +95,181 @@ def main(page:Page):
                     )
                 )
     
-    Category_contents=Row(
-        controls=[Container(expand=True,
-                            bgcolor=FG,
-                            padding=padding.only(top=50,left=20,
-                                     right=20,bottom=5),
-                                     content=Column(controls=[
-                                                    Row(
-                                                    controls=[IconButton(on_click=lambda _:page.go('/'),
-                                  content=Icon(icons.CLOSE_ROUNDED))])
-                                        
-                                        ]
-                                    )
-                                )
-                            ]
-                        )
+    # category_list = []
+    # category_colors = []
+    category_list,category_colors=tuple(zip(*database.show_all_categories(database.ConnectToDatabase())))
+    category_list=list(category_list)
+    category_colors=list(category_colors)
+    category_container = Column(
+        controls=[])
     
+    
+
+    # Pop-up box
+    dialog = None
+
+    def add_category(e):
+        new_category = category_input.value
+        new_color = category_color_dropdown.value
+        if new_category and new_color:
+            if new_category in category_list:
+                show_duplicate_dialog(new_category)
+            else:
+                category_list.append(new_category)
+                category_colors.append(new_color)
+                add_category_row(new_category, new_color)
+                database.insert_category(database.ConnectToDatabase(),new_category,new_color)
+                category_input.value = ""
+                category_color_dropdown.value = None
+                category_input.on_submit = add_category  # Reset the on_submit function
+                page.update()
+
+    def show_duplicate_dialog(category):
+        global dialog
+        dialog = AlertDialog(
+            title=Text("Duplicate Category"),
+            content=Text(f"The category '{category}' has already been used."),
+            actions=[
+                IconButton(on_click=lambda _: close_dialog(), icon=icons.CLOSE_ROUNDED, 
+#                           alignment=alignment.top_right
+                           )
+            ],
+            on_dismiss=lambda e: print("Dialog dismissed!"),
+        )
+        page.dialog = dialog
+        dialog.open = True
+        page.update()
+
+    def close_dialog():
+        global dialog
+        dialog.open = False
+        page.update()
+
+    def add_category_row(category, color):
+        category_container.controls.append(Container(bgcolor=BG, border_radius=10, padding=15, content=
+            Row(
+                alignment='spaceBetween',
+                controls=[
+                    Container(
+                        width=20,
+                        height=20,
+                        bgcolor=color,
+                        border_radius=10,
+                        margin=margin.only(right=10)
+                    ),
+                    Text(category),
+                    Row(
+                        controls=[
+                            IconButton(
+                                content=Icon(icons.EDIT),
+                                on_click=lambda _: edit_category(category)
+                            ),
+                            IconButton(
+                                content=Icon(icons.DELETE_FOREVER),
+                                on_click=lambda _: delete_category(category)
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+    )
+        page.update()
+
+    def edit_category(category):
+        category_index = category_list.index(category)
+        category_input.value = category_list[category_index]
+        category_color_dropdown.value = category_colors[category_index]
+
+        def update_category(e):
+            new_category = category_input.value
+            new_color = category_color_dropdown.value
+
+            if new_color in color_options:
+                new_color_index = color_options.index(new_color)
+            else:
+                new_color_index = int(new_color)
+
+            category_list[category_index] = new_category
+            category_colors[category_index] = color_options[new_color_index]
+
+            # Rebuild the entire category container
+            rebuild_category_container()
+
+            category_input.value = ""
+            category_color_dropdown.value = None
+            category_input.on_submit = add_category  # Reset the on_submit function
+            page.update()
+
+        category_input.on_submit = update_category
+        category_input.focus()  # Set focus to the text field
+        page.update()
+
+    def delete_category(category):
+        category_index = category_list.index(category)
+
+        def confirm_delete(choice):
+            if choice == 'yes':
+                category_list.pop(category_index)
+                category_colors.pop(category_index)
+                # Remove the corresponding controls from the category_container
+                for index, control in enumerate(category_container.controls):
+                    if isinstance(control, Container) and control.content.controls[1].value == category:
+                        category_container.controls.pop(index)
+                        break
+            dialog.open = False  # Hide the dialog box after clicking "Yes" or "No"
+            page.update()
+
+        dialog = AlertDialog(
+            title=Text("Delete Category"),
+            content=Text(f"Are you sure you want to delete the category '{category}'?"),
+            actions=[
+                TextButton("No", on_click=lambda _: (confirm_delete('no'))),
+                TextButton("Yes", on_click=lambda _: (confirm_delete('yes')))
+            ],
+            on_dismiss=lambda e: print("Dialog dismissed!"),
+        )
+
+        page.dialog = dialog
+        dialog.open = True
+        page.update()
+
+    def rebuild_category_container():
+        category_container.controls.clear()
+        for category, color in zip(category_list, category_colors):
+            add_category_row(category, color)
+
+    category_input = TextField(hint_text="Enter new category", expand=True, on_submit=add_category)
+    category_color_dropdown = Dropdown(
+        width=125,
+        options=dropdown_options
+    )
+    categories_dropdown=Dropdown(
+        width=125,
+        options=[dropdown.Option(x) for x in category_list]
+    )
+
+    Category_contents = Row(
+        controls=[Container(expand=True,
+                           bgcolor=FG,
+                           padding=padding.only(top=50, left=20,
+                                               right=20, bottom=5),
+                           content=Column(controls=[
+                               Row(
+                                   controls=[IconButton(on_click=lambda _: page.go('/'),
+                                                       content=Icon(icons.CLOSE_ROUNDED))]),
+                               Row(
+                                   controls=[category_color_dropdown, category_input]),
+                               category_container
+                           ]
+                           )
+                           )
+                  ]
+              )
+    
+    
+    Enter_Amount=TextField(hint_text="Enter amount", expand=False, on_submit=lambda _ : Print())
+
     Dataput_contents=Row(
         controls=[Container(expand=True,
                             bgcolor=FG,
@@ -434,6 +609,21 @@ def main(page:Page):
                                 )
                             ]
                         )
+    AddData_contents=Row(
+        controls=[Container(expand=True,
+                            bgcolor=FG,
+                            padding=padding.only(top=50,left=20,
+                                     right=20,bottom=5),
+                                     content=Column(controls=[
+                                                    Row(
+                                                    controls=[IconButton(on_click=lambda _:page.go('/'),
+                                  content=Icon(icons.CLOSE_ROUNDED))])
+                                        
+                                        ]
+                                    )
+                                )
+                            ]
+                        )
     
 
     #routing info
@@ -442,6 +632,11 @@ def main(page:Page):
                 expand=True,
                 bgcolor=FG,
                 content=Dataput_contents
+                                  
+                )]),'/AddData':View('/AddData',[Container(
+                expand=True,
+                bgcolor=FG,
+                content=AddData_contents
                                   
                 )]),'/Analysis':View('/Analysis',[Container(
                 expand=True,
@@ -474,12 +669,14 @@ def main(page:Page):
         page_2.controls[0].expand=False
         page_2.controls[0].width=page.width/2
         page_2.controls[0].scale=transform.Scale(0.8,alignment.center_right)
+        page_2.controls[0].border_radius=25
         page_2.update()
 
 
     def restore(e):
         page_2.controls[0].width=page.width
         page_2.controls[0].scale=transform.Scale(1,alignment.center_right)
+        page_2.controls[0].border_radius=None
         page_2.update()
 
     def change_route(route):
@@ -595,6 +792,29 @@ def main(page:Page):
                                                             ),
                 )
 
+    def previous_date_dp():
+        presentday_str='-'.join(list((Dataput_contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value).split())[::-1])
+        presentday=datetime.datetime.fromisoformat(presentday_str)
+        yesterday = presentday - datetime.timedelta(1)
+        Dataput_contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
+        date=yesterday.strftime('%d %m %Y')
+        show_daily_analysis(date)
+        page.update()
+
+    def next_date_dp():
+        presentday_str='-'.join(list((Dataput_contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value).split())[::-1])
+        presentday=datetime.datetime.fromisoformat(presentday_str)
+        tomorrow = presentday + datetime.timedelta(1)
+        if tomorrow>datetime.datetime.today():
+            pass
+        else:
+            Dataput_contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
+            date=tomorrow.strftime('%d %m %Y')
+            show_daily_analysis(date)
+            page.update()
+
+
+
 
     def change_analysis_format():
         if analysis_dropdown.value=="Day":
@@ -612,6 +832,7 @@ def main(page:Page):
     def change_date(e):
         # page.views[-1].controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=(date_picker.value.strftime("%d %m %Y"))
+        Dataput_contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=(date_picker.value.strftime("%d %m %Y"))
         date=date_picker.value.strftime("%d %m %Y")
         show_daily_analysis(date)
         page.update()
@@ -678,11 +899,14 @@ def main(page:Page):
             show_monthly_analysis(str(nextmonth))
         page.update()
 
-
+    def Print():
+        print("hello world")
 
     show_daily_analysis(date)
+    rebuild_category_container()
     # show_daily_analysis(month)
     analysis_dropdown.value="Day"
+
     # print(month)
 
     
