@@ -53,15 +53,17 @@ def insert_category(conn,cat : str, color:str):
     c.execute("INSERT INTO categories VALUES (?,?)",(cat,color))
     conn.commit()
 
-def delete_category(conn,cat:str,color,str):
+def delete_category(conn,cat:str,color:str):
     c=conn.cursor()
     c.execute("DELETE FROM categories WHERE category_name=(?) AND color=(?)",(cat,color))
-    c.execute("DELETE FROM expenses WHERE category_name=(?)",cat)
+    c.execute("DELETE FROM expenses WHERE category_name=(?)",(cat,))
     conn.commit()
 
 def edit_category(conn,old_cat,new_cat):
+    #(categoryname,color)
     c=conn.cursor()
     c.execute("UPDATE categories SET category_name=(?),color=(?) WHERE category_name=(?) AND color=(?)",new_cat+old_cat)
+    c.execute("UPDATE expenses SET category_name = (?) WHERE category_name=(?)",(new_cat[0],old_cat[0]))
     conn.commit()
 #edit_category(ConnectToDatabase(),('ree','#0000FF'),('FREE','#000000'))
 
@@ -93,17 +95,30 @@ def insert_expense(conn,data:tuple):
 def delete_expense(conn,data:tuple):
     # data = (category_name,amount,date)
     c=conn.cursor()
-    c.execute("DELETE FROM expenses WHERE category_name=(?) AND amount=(?) AND Date=(?)",data)
+    c.execute("SELECT rowid FROM expenses WHERE category_name=(?) AND amount=(?) AND Date=(?) LIMIT 1",data)
+    id=c.fetchone()
+    id=id[0]
+    c.execute("DELETE FROM expenses WHERE rowid=(?)",(id,))
     conn.commit()
 # delete_expense(ConnectToDatabase(),('cat1',23,'08 04 2024'))
 
 def edit_expense(conn,data_old:tuple,data_new:tuple):
     # data=(category_name,amount,Date)
-    data_new+=tuple(get_week_no(data_new[2]))
     c=conn.cursor()
-    c.execute("UPDATE expenses SET category_name=(?),amount=(?),Date=(?),Week=(?) WHERE category_name=(?) AND amount=(?) AND Date=(?)",data_new+data_old)
-    conn.commmit()
+    c.execute("SELECT ROWID FROM expenses WHERE category_name=(?) AND amount=(?) AND Date=(?) LIMIT 1",data_old)
+    id=c.fetchone()
+    c.execute("UPDATE expenses SET category_name=(?),amount=(?),Date=(?) WHERE ROWID=(?)",data_new+id)
+    conn.commit()
 
+def get_category_color(conn,cat:str):
+    c=conn.cursor()
+    c.execute("SELECT color FROM categories WHERE category_name=(?)",(cat,))
+    a=c.fetchone()
+    # a=list(a)
+    a=a[0]
+    return a
+
+# print(get_category_color(ConnectToDatabase(),"Cat1"))
 
 # check_username(ConnectToDatabase())
 # print(show_weekly_expense(ConnectToDatabase(),1))
