@@ -79,9 +79,10 @@ def show_weekly_expense(conn,Week:int):
     items=c.fetchall()
     return items
 
-def show_monthly_expense(conn,month:str):
+def show_monthly_expense(conn,monthyr:str):
+    # month=(mm,yyyy) or "mm yyyy"
     c=conn.cursor()
-    c.execute("SELECT * FROM expenses WHERE SUBSTR(Date,4,2)=(?) ORDER BY amount DESC",(month,))
+    c.execute("SELECT * FROM expenses WHERE SUBSTR(Date,4,7)=(?) ORDER BY amount DESC",(monthyr,))
     return c.fetchall()
 
 def insert_expense(conn,data:tuple):
@@ -117,7 +118,19 @@ def get_category_color(conn,cat:str):
     # a=list(a)
     a=a[0]
     return a
-
+def change_weeks():
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("SELECT Date FROM expenses")
+    dates=c.fetchall()
+    dates=[x[0] for x in dates]
+    # print(dates)
+    for date in dates:
+        weekno=get_week_no(date)
+        # print(weekno)
+        c.execute("UPDATE expenses SET week=(?) WHERE Date=(?)",(weekno,date))
+        conn.commit()
+change_weeks()
 # print(get_category_color(ConnectToDatabase(),"Cat1"))
 
 # check_username(ConnectToDatabase())
