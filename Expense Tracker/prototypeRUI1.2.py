@@ -172,14 +172,14 @@ def main(page:Page):
 
                 page.floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
                                                        bgcolor=colors.WHITE,
-                                                       foreground_color=colors.BLACK,
+                                                       #foreground_color=colors.BLACK,
                                                        shape=CircleBorder(),
                                                        width=50,
                                                        on_click=lambda _:page.go('/Dataput'))
     
                 page.floating_action_button_location = FloatingActionButtonLocation.CENTER_DOCKED
 
-                page.appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker',size=20))
+                page.appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker',size=20,color='white'))
 
                 page.drawer = NavigationDrawer(
                             controls=[
