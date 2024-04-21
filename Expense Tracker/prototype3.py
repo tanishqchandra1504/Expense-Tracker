@@ -1,16 +1,19 @@
 import flet
 from flet import *
-import database
 import datetime
+import database
  
+#FEEL FREE TO CHANGE COLOURS
 
-#SMALL ERROR PRESENT THE SELECTED INDEX DOES NOT CHANGE AFTER ROUTING 
 
 def main(page:Page):
+    global on_start
     BG = '#041955'
     FWG = '#97b4ff'
     FG = '#3450a1'
     PINK = '#eb06ff'
+    CG='#201D1D'
+    on_start=True
     color_options = [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF',
         '#FFA500', '#800080', '#008000', '#800000', '#008080', '#808000',
@@ -25,12 +28,13 @@ def main(page:Page):
     dropdown_options = [
             dropdown.Option(color_options[i], color_names[i]) for i in range(len(color_options))
         ]
-    
+
     category_input = TextField(hint_text="Enter new category", expand=True, on_submit=lambda _:add_category())
     category_color_dropdown = Dropdown(
         width=125,
         options=dropdown_options,
-        on_change=lambda _: print(category_color_dropdown.value))
+        # on_change=lambda _: print(category_color_dropdown.value)
+        )
     
     
     #initializing category names and colors
@@ -42,16 +46,16 @@ def main(page:Page):
     categoris_dropdown=Dropdown(
         width=125,
         options=[dropdown.Option(category_list[i]) for i in range(len(category_list))],
-        on_change=lambda _: print(categoris_dropdown.value))
+        # on_change=lambda _: print(categoris_dropdown.value)
+        )
     
     analysis_dropdown=Dropdown(
         width=100,
         options=[dropdown.Option("Day"),dropdown.Option("Week"),dropdown.Option("Month")],
         on_change=lambda _ : change_analysis_format(),
     )    
-    Input_Amount=TextField(hint_text="Enter amount", expand=False, on_submit=lambda _:add_expense())
-    Input_Amount1=TextField(hint_text="Enter amount", expand=False, on_submit=lambda _:add_expense1())
-
+    Input_Amount=TextField(hint_text="Enter amount", expand=True, on_submit=lambda _:add_expense())
+    Input_Amount1=TextField(hint_text="Enter amount", expand=True, on_submit=lambda _:add_expense1())
     editdata_list=Column(
         controls=[
 
@@ -60,8 +64,7 @@ def main(page:Page):
     date=datetime.datetime.now().strftime("%d %m %Y")
     month=date[3:5]
 #####################################################################################################################
-#initializing pages
-
+# initializing pages
     category_container = ListView(
         expand=True,
         spacing=10,
@@ -71,62 +74,62 @@ def main(page:Page):
     )
 
     #first_page
-    first_page_contents=Container(
-        content=Column(
-            controls=[Row(alignment='spaceBetween',
-                        controls=[IconButton(on_click=lambda e:shrink(e),
-                                            content=Icon(icons.ARROW_FORWARD)),
-                                  IconButton(on_click=lambda _:page.go('/AddData'),
-                                            content=Icon(icons.ADD))]
-                                            )
-                                        ]
-                                    )
-                                )
+    # first_page_contents=Container(
+    #     content=Column(
+    #         controls=[Row(alignment='spaceBetween',
+    #                     controls=[IconButton(on_click=lambda e:shrink(e),
+    #                                         content=Icon(icons.ARROW_FORWARD)),
+    #                               IconButton(on_click=lambda _:page.go('/AddData_Contents'),
+    #                                         content=Icon(icons.ADD))]
+    #                                         )
+    #                                     ]
+    #                                 )
+    #                             )
 
-    page_1= Container(expand=True,
-                bgcolor=BG,
-                padding=20,
-                content=Column(
-                    controls=[Container(height=17),
-                        IconButton(on_click=lambda e:restore(e),
-                            content=Icon(icons.ARROW_BACK)),
-                            Container(height=17),
-                            Row(controls=[TextButton('Analysis',icon=icons.ANALYTICS_SHARP,on_click=lambda _:page.go('/Analysis'))]),
-                            Container(height=17),
-                            Row(controls=[TextButton('Categories',icons.CATEGORY_SHARP,on_click=lambda _:page.go('/Categories'))]),
-                            Container(height=17),
-                            Row(controls=[TextButton('Edit data',icon=icons.DATA_ARRAY_SHARP,on_click=lambda _:goto_editdata())]),
-                            Container(height=17),
-                            Row(controls=[TextButton('Settings',icon=icons.SETTINGS,on_click=lambda _:page.go('/Settings'))]),
-                            Container(height=17),
-                            Row(controls=[TextButton('Exit',icon=icons.EXIT_TO_APP_SHARP,on_click=lambda _:page.go('/Exit'))])
+    # page_1= Container(expand=True,
+    #             bgcolor=BG,
+    #             padding=20,
+    #             content=Column(
+    #                 controls=[Container(height=17),
+    #                     IconButton(on_click=lambda e:restore(e),
+    #                         content=Icon(icons.ARROW_BACK)),
+    #                         Container(height=17),
+    #                         Row(controls=[TextButton('Analysis',icon=icons.ANALYTICS_SHARP,on_click=lambda _:page.go('/Analysis'))]),
+    #                         Container(height=17),
+    #                         Row(controls=[TextButton('Categories',icons.CATEGORY_SHARP,on_click=lambda _:page.go('/Categories'))]),
+    #                         Container(height=17),
+    #                         Row(controls=[TextButton('Edit data',icon=icons.DATA_ARRAY_SHARP,on_click=lambda _:goto_editdata())]),
+    #                         Container(height=17),
+    #                         Row(controls=[TextButton('Settings',icon=icons.SETTINGS,on_click=lambda _:page.go('/Settings'))]),
+    #                         Container(height=17),
+    #                         Row(controls=[TextButton('Exit',icon=icons.EXIT_TO_APP_SHARP,on_click=lambda _:page.go('/Exit'))])
 
-                            ]
-                        )
-                     )
+    #                         ]
+    #                     )
+    #                  )
     
-    page_2= Row(alignment='end',#when animation happens it should move to right , default left  
-        controls=[
-            Container(expand=True,
-                bgcolor=FG,
-                animate=animation.Animation(600,AnimationCurve.DECELERATE),
-                animate_scale=animation.Animation(400,AnimationCurve.DECELERATE),
-                padding=padding.only(top=50,left=20,
-                                     right=20,bottom=5),
-                content=Column(
-                    controls=[
-                        first_page_contents,
-                        ]
-                    )
-                )
-            ]
-        )
+    # page_2= Row(alignment='end',#when animation happens it should move to right , default left  
+    #     controls=[
+    #         Container(expand=True,
+    #             bgcolor=FG,
+    #             animate=animation.Animation(600,AnimationCurve.DECELERATE),
+    #             animate_scale=animation.Animation(400,AnimationCurve.DECELERATE),
+    #             padding=padding.only(top=50,left=20,
+    #                                  right=20,bottom=5),
+    #             content=Column(
+    #                 controls=[
+    #                     first_page_contents,
+    #                     ]
+    #                 )
+    #             )
+    #         ]
+    #     )
 
     dialog= None
 #####################################################################################################################
 #initializing some functions 
     def goto_editdata():
-        page.go('/Editdata')
+        page.go('/EditData')
         page.update()
 
     def isleapyear(y:int):
@@ -145,31 +148,6 @@ def main(page:Page):
         return daterange
 #####################################################################################################################
 
-
-    page.padding=0
-
-    page.floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
-                                                       bgcolor=colors.WHITE,
-                                                       #foreground_color=colors.BLACK,
-                                                       shape=CircleBorder(),
-                                                       width=50,
-                                                       on_click=lambda _:page.go('/AddData'))
-    
-    page.floating_action_button_location = FloatingActionButtonLocation.CENTER_DOCKED
-
-    page.bottom_appbar = NavigationBar(
-        bgcolor=colors.BLACK12,
-        on_change=lambda e:changetab(e),
-        destinations=[
-            NavigationDestination(label='Home',icon=icons.HOME_OUTLINED,selected_icon=icons.HOME),
-            NavigationDestination(label='Analysis',icon=icons.ANALYTICS_OUTLINED,selected_icon=icons.ANALYTICS),
-            NavigationDestination(label='Categories',icon=icons.CATEGORY_OUTLINED,selected_icon=icons.CATEGORY),
-            NavigationDestination(label='More',icon=icons.MORE_HORIZ_OUTLINED,selected_icon=icons.MORE_HORIZ),
-                    ]
-            )
-    
-#####################################################################################################################
-
     Home_Page_Contents=Row(                                                         #DAILY GRAPHS WILL APPEAR IN HOME PAGE
         controls=[Container(expand=True,
                         bgcolor=colors.CYAN,
@@ -184,7 +162,7 @@ def main(page:Page):
             controls=[Container(expand=True,
                                 bgcolor=colors.TEAL,
                                 padding=padding.only(top=50,left=20,right=20,bottom=5),
-                                content=Column(controls=[
+                                content=ListView(auto_scroll=True,controls=[
                                                 Row(
                                                     alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                     controls=[
@@ -247,7 +225,7 @@ def main(page:Page):
         controls=[Container(expand=True,
                             bgcolor=colors.TEAL,
                             padding=padding.only(top=50,left=20,right=20,bottom=5),
-                            content=Column(controls=[
+                            content=ListView(auto_scroll=True,controls=[
                                             Row(
                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                 controls=[
@@ -312,7 +290,7 @@ def main(page:Page):
         controls=[Container(expand=True,
                             bgcolor=colors.TEAL,
                             padding=padding.only(top=50,left=20,right=20,bottom=5),
-                            content=Column(controls=[
+                            content=ListView(auto_scroll=True,controls=[
                                             Row(
                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                 controls=[
@@ -339,7 +317,7 @@ def main(page:Page):
                                                                     ),
                                                                     TextButton(
                                                                         width=120,
-                                                                        content=Text("hello"),#Text((datetime.datetime.now().strftime("%m %Y"))),
+                                                                        content=Text("uselesstext"),#Text((datetime.datetime.now().strftime("%m %Y"))),
                                                                         on_click=lambda _: page.show_bottom_sheet(CupertinoBottomSheet(CupertinoActionSheet(
                                                                             title=Text("Select month"),
                                                                             cancel=CupertinoActionSheetAction(
@@ -384,8 +362,9 @@ def main(page:Page):
                         bgcolor=colors.TEAL,
                         padding=padding.only(top=50,left=20,
                                 right=20,bottom=5),
-                                content=Column(controls=[
-                                            Row(#close button
+                                content=ListView(auto_scroll=True,
+                                                 controls=[
+                                            Row(
                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                 controls=[
                                                     analysis_dropdown,
@@ -441,44 +420,11 @@ def main(page:Page):
                                                 
                                             )
                                         ]
-                                    )
-                        )
-            ]
-        )
-
-
-    Category_contents=Row(                                                             #TANISHQ CODE + PARTH SQL CODE HERE
-        controls=[Container(expand=True,
-                        bgcolor=colors.INDIGO,
-                        padding=padding.only(top=50,left=20,
-                                right=20,bottom=5),
-                                content=Column(controls=[
-                               Row(
-                                   controls=[category_color_dropdown, category_input]),
-                               category_container
-                           ]
-                           )
-                                        )
+                                    ))
                                     ]
                                 )
-   
-    More_Page_Contents=Row(
-        controls=[Container(expand=True,
-                           bgcolor=FG,
-                           padding=padding.only(top=50, left=20,
-                                               right=20, bottom=5),
-                           content=Column(controls=[
-                                Row(
-                                   controls=[Row(controls=[TextButton('Settings',icon=icons.SETTINGS,on_click=lambda _:page.go('/Settings'))])]),
-                                Row(controls=[TextButton('EditDataPage',icon=icons.MONEY_OUTLINED,on_click=lambda _:page.go('/EditDataPage'))])
-                           ]
-                           )
-                           )
-                  ]
-              )
     
-    #make it open  from bottom like navigation drawer
-    Add_Data_Contents=Row(                                                   #PARTH CODE FOR PLUS BUTTON IN HOME SCREEN
+    AddData_Contents=Row(                                                   #PARTH CODE FOR PLUS BUTTON IN HOME SCREEN
             controls=[Container(expand=True,
                         bgcolor=FG,
                         padding=padding.only(top=50, left=20,
@@ -490,8 +436,8 @@ def main(page:Page):
                                     width=150,
                                     height=40,
                                     elevation=1,
-                                    color=colors.TEAL,
-                                    content=Text("Today",text_align=TextAlign.CENTER,weight=FontWeight.BOLD,size=20),
+                                    color=colors.BLUE,
+                                    content=Text(value=datetime.datetime.today().strftime('%d/%m/%Y'),text_align=TextAlign.CENTER,weight=FontWeight.BOLD,size=20),
                                 )
                             ]
                             ),
@@ -501,30 +447,30 @@ def main(page:Page):
                                     Input_Amount1
                                 ]
                             )
-
-                        ]
-                        )
+                        ])
                         )
                 ]
             )
-    
-    Settings_Contents=Row(
+ 
+    Category_contents=Row(                                                             #TANISHQ CODE + PARTH SQL CODE HERE
         controls=[Container(expand=True,
-                           bgcolor=colors.TEAL,
-                           padding=padding.only(top=50, left=20,
-                                               right=20, bottom=5),
-                           content=Column(controls=[
+                        bgcolor=colors.INDIGO,
+                        padding=padding.only(top=50,left=20,
+                                right=20,bottom=5),
+                                content=Column(controls=[
                                Row(
-                                   controls=[IconButton(on_click=lambda _: page.go('/'),
-                                                       content=Icon(icons.CLOSE_ROUNDED))]),
+                                   controls=[category_color_dropdown, category_input]),
+                               category_container
                            ]
-                           )
-                           )
-                  ]
-              )
-    Editdata_Contents=Row(                                                        #PARTH CODE FOR EDIT DATA PAGE
+                        )
+                                        )
+                                    ]
+                                )
+    
+
+    EditData_Contents=Row(                                                        #PARTH CODE FOR EDIT DATA PAGE
         controls=[Container(expand=True,
-                           bgcolor=colors.TEAL,
+                           bgcolor=FWG,
                            padding=padding.only(top=50, left=20,
                                                right=20, bottom=5),
                            content=Column(controls=[
@@ -575,34 +521,48 @@ def main(page:Page):
                   ]
               )
     
+    Settings_Contents=Row(
+        controls=[Container(expand=True,
+                           bgcolor=colors.TEAL,
+                           padding=padding.only(top=50, left=20,
+                                               right=20, bottom=5),
+                           content=Column(controls=[
+                               Row(
+                                   controls=[IconButton(on_click=lambda _: page.go('/'),
+                                                       content=Icon(icons.CLOSE_ROUNDED))])
+                           ]
+                           )
+                           )
+                  ]
+              )
+
 #####################################################################################################################
-#all the functions will come here
+#all the functions
     #Route functions
-    def shrink(e):
-        page_2.controls[0].expand=False
-        page_2.controls[0].width=page.width/2
-        page_2.controls[0].scale=transform.Scale(0.8,alignment.center_right)
-        page_2.controls[0].border_radius=25
-        page_2.update()
+    # def shrink(e):
+    #     page_2.controls[0].expand=False
+    #     page_2.controls[0].width=page.width/2
+    #     page_2.controls[0].scale=transform.Scale(0.8,alignment.center_right)
+    #     page_2.controls[0].border_radius=25
+    #     page_2.update()
 
-    def restore(e):
-        page_2.controls[0].width=page.width
-        page_2.controls[0].scale=transform.Scale(1,alignment.center_right)
-        page_2.controls[0].border_radius=None
-        page_2.update()
+    # def restore(e):
+    #     page_2.controls[0].width=page.width
+    #     page_2.controls[0].scale=transform.Scale(1,alignment.center_right)
+    #     page_2.controls[0].border_radius=None
+    #     page_2.update()
 
-    def change_route(route):
-        page.views.clear()
-        page.views.append(
-            pages[page.route]
-        )
-        page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
-        page.update()
+    # def change_route(route):
+    #     page.views.clear()
+    #     page.views.append(
+    #         pages[page.route]
+    #     )
+    #     page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
+    #     page.update()
     
     def add_category():
         new_category = category_input.value
         new_color = category_color_dropdown.value
-        print(new_color)
         if new_category and new_color:
             if new_category in category_list:
                 show_duplicate_dialog(new_category)
@@ -613,8 +573,8 @@ def main(page:Page):
                 database.insert_category(database.ConnectToDatabase(),new_category,new_color)
                 category_input.value = ""
                 category_color_dropdown.value = None
-                category_input.on_submit = add_category  # Reset the on_submit function
-                Editdata_Contents.controls[0].content.controls[1].controls[0]=update_dropdown()
+                # category_input.on_submit =lambda _: add_category()  # Reset the on_submit function lookupagain
+                update_dropdown()
                 page.update()
 
     def show_duplicate_dialog(category):
@@ -687,7 +647,7 @@ def main(page:Page):
             category_colors[category_index] = color_options[new_color_index]
             new_data=(category_list[category_index],category_colors[category_index])
             database.edit_category(database.ConnectToDatabase(),old_data,new_data) #update db file through sqlite3
-            Editdata_Contents.controls[0].content.controls[1].controls[0]=update_dropdown()
+            update_dropdown()
             # Rebuild the entire category container
             rebuild_category_container()
 
@@ -700,22 +660,21 @@ def main(page:Page):
         page.update()
 
     def edit_expense(category,amount,date):
-        Editdata_Contents.controls[0].content.controls[1].controls[0].value=category
+        EditData_Contents.controls[0].content.controls[1].controls[0].value=category
         Input_Amount.value=amount
         def update_expense():
-            new_category=Editdata_Contents.controls[0].content.controls[1].controls[0].value
+            new_category=EditData_Contents.controls[0].content.controls[1].controls[0].value
             new_amount=Input_Amount.value
             database.edit_expense(database.ConnectToDatabase(),(category,amount,date),(new_category,new_amount,date))
             build_editdata()
 
             Input_Amount.value=None
             Input_Amount.on_submit=lambda _:add_expense()
-            Editdata_Contents.controls[0].content.controls[1].controls[0].value=None
+            EditData_Contents.controls[0].content.controls[1].controls[0].value=None
             page.update()
         Input_Amount.on_submit=lambda _: update_expense()
         Input_Amount.focus()
         page.update()
-
     def delete_category(category):
         category_index = category_list.index(category)
 
@@ -724,7 +683,7 @@ def main(page:Page):
                 x=category_list.pop(category_index)
                 y=category_colors.pop(category_index)
                 database.delete_category(database.ConnectToDatabase(),x,y)
-                Editdata_Contents.controls[0].content.controls[1].controls[0]=update_dropdown()
+                update_dropdown()
                 # Remove the corresponding controls from the category_container
                 for index, control in enumerate(category_container.controls):
                     if isinstance(control, Container) and control.content.controls[1].value == category:
@@ -755,23 +714,23 @@ def main(page:Page):
 
 
     def add_expense():
-        category=Editdata_Contents.controls[0].content.controls[1].controls[0].value
+        category=EditData_Contents.controls[0].content.controls[1].controls[0].value
         amount=Input_Amount.value
-        date=Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value
+        date=EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value
         database.insert_expense(database.ConnectToDatabase(),(category,amount,date))
         add_editdata_row(database.get_category_color(database.ConnectToDatabase(),category),category,amount,date)
         #reset the dropdown and texfield
-        Editdata_Contents.controls[0].content.controls[1].controls[0].value=None
+        EditData_Contents.controls[0].content.controls[1].controls[0].value=None
         Input_Amount.value=None
         page.update()
     
     def add_expense1():
-        category=Add_Data_Contents.controls[0].content.controls[2].controls[0].value
-        amount=Add_Data_Contents.controls[0].content.controls[2].controls[1].value
+        category=AddData_Contents.controls[0].content.controls[1].controls[0].value
+        amount=AddData_Contents.controls[0].content.controls[1].controls[1].value
         date=datetime.datetime.today().strftime("%d %m %Y")
         database.insert_expense(database.ConnectToDatabase(),(category,amount,date))
         Input_Amount1.value=None
-        Add_Data_Contents.controls[0].content.controls[1].controls[0].value=None
+        AddData_Contents.controls[0].content.controls[1].controls[0].value=None
         open_snackbar_addedexpense()
         page.update()
 
@@ -814,7 +773,7 @@ def main(page:Page):
 
     def build_editdata():
         editdata_list.controls.clear()
-        present_date=Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value
+        present_date=EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value
         data_list=database.show_daily_expense(database.ConnectToDatabase(),present_date)
         for cat,amt,c,d in data_list:
             # print(cat,amt,database.get_category_color(database.ConnectToDatabase(),cat))
@@ -824,8 +783,11 @@ def main(page:Page):
         new_dropdown=Dropdown(
         width=125,
         options=[dropdown.Option(category_list[i]) for i in range(len(category_list))],
-        on_change=lambda _: print(new_dropdown.value))
-        return new_dropdown
+        # on_change=lambda _: print(new_dropdown.value)
+        )
+        AddData_Contents.controls[0].content.controls[1].controls[0]=new_dropdown
+        EditData_Contents.controls[0].content.controls[1].controls[0]=new_dropdown
+        page.update()
     
     
     def delete_expense(category,amount,date):
@@ -849,7 +811,7 @@ def main(page:Page):
     )
     def change_date2(e):
         # page.views[-1].controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
-        Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=(date_picker2.value.strftime("%d %m %Y"))
+        EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=(date_picker2.value.strftime("%d %m %Y"))
         date=date_picker2.value.strftime("%d %m %Y")
         # show_daily_analysis(date)
         build_editdata()
@@ -902,19 +864,19 @@ def main(page:Page):
                Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
-                                                                    Card(
+                                                                    Container(
                                                                         expand=True,
-                                                                        height=50,
-                                                                        # border=border.all(0.85, "white54"),
-                                                                        # border_radius=8,
-                                                                        color=BG,
+                                                                        height=30,
+                                                                        border=border.all(0.85, BG),
+                                                                        border_radius=8,
+                                                                        bgcolor="transparent",
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+item[0],color="white",size=30),
-                                                                                    Text(str(item[1]) + "    ",color="white",size=30)
+                                                                                    Text("    "+item[0],color="white",size=20),
+                                                                                    Text(str(item[1]) + "    ",color="white",size=20)
                                                                                     
                                                                                 ]
                                                                             )
@@ -925,6 +887,7 @@ def main(page:Page):
                                                                 
                                                             ),
                 )
+        page.update()
 
     def show_weekly_analysis(week):
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
@@ -1047,22 +1010,22 @@ def main(page:Page):
         page.update()
 
     def previous_date_dp():
-        presentday_str='-'.join(list((Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
+        presentday_str='-'.join(list((EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
         presentday=datetime.datetime.fromisoformat(presentday_str)
         yesterday = presentday - datetime.timedelta(1)
-        Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
+        EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
         date=yesterday.strftime('%d %m %Y')
         build_editdata()
         page.update()
 
     def next_date_dp():
-        presentday_str='-'.join(list((Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
+        presentday_str='-'.join(list((EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
         presentday=datetime.datetime.fromisoformat(presentday_str)
         tomorrow = presentday + datetime.timedelta(1)
         if tomorrow>datetime.datetime.today():
             pass
         else:
-            Editdata_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
+            EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
             date=tomorrow.strftime('%d %m %Y')
             build_editdata()
             page.update()
@@ -1105,15 +1068,10 @@ def main(page:Page):
             show_weekly_analysis(nextweek)
         page.update()
 
-    def isleapyear(y:int):
-        if y%400==0 or (y%4==0 and y%100!=0):
-            return True
-        else: return False
-
     def previous_month():
         presentmonth_str='01 '+Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value #or month_picker.value
         presentmonth_str="-".join(presentmonth_str.split()[::-1])
-        print(presentmonth_str)
+        # print(presentmonth_str)
         present_month=datetime.datetime.fromisoformat(presentmonth_str)
         prvmonth=present_month-datetime.timedelta(1)
         prvmonth_str=prvmonth.strftime("%m %Y")
@@ -1133,7 +1091,7 @@ def main(page:Page):
             else:
                 presentmonth_str='28 '+mmyyyy
         presentmonth_str="-".join(presentmonth_str.split()[::-1])
-        print(presentmonth_str)
+        # print(presentmonth_str)
         present_month=datetime.datetime.fromisoformat(presentmonth_str)
         nxtmonth=present_month+datetime.timedelta(1)
         if nxtmonth<=datetime.datetime.today():
@@ -1144,8 +1102,8 @@ def main(page:Page):
             #enter dialog here
             pass
         page.update()
-#####################################################################################################################
 
+#####################################################################################################################
     
     Home_Page= Container(expand=True,visible=True,content=Home_Page_Contents)
 
@@ -1153,9 +1111,9 @@ def main(page:Page):
 
     Category_Page = Container(expand=True,visible=False,content=Category_contents)
 
-    More_Page = Container(expand=True,
+    EditData_Page = Container(expand=True,
                           visible=False,
-                          content=More_Page_Contents)
+                          content=EditData_Contents)
 
     Initial_Page=Container(expand=True,
                            content=Row(
@@ -1163,7 +1121,7 @@ def main(page:Page):
                                     Home_Page,
                                     Analysis_Page,
                                     Category_Page,
-                                    More_Page
+                                    EditData_Page
 
                                     ]
                                 )
@@ -1173,77 +1131,140 @@ def main(page:Page):
     
 #####################################################################################################################
 
-    pages={'/':View('/',[Initial_Page,date_picker1]),
-           '/AddData':View('/AddData',[Container(expand=True,
+    pages={'/':View('/',[Initial_Page,date_picker1,date_picker2],floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
+                                        bgcolor=colors.WHITE,
+                                                       #foreground_color=colors.BLACK,
+                                        shape=CircleBorder(),
+                                        width=50,
+                                        on_click=lambda _:page.go('/AddData_Contents')),
+    
+                floating_action_button_location = FloatingActionButtonLocation.CENTER_DOCKED,
+
+                appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker',size=20,color='white')),
+
+                drawer = NavigationDrawer(
+                            controls=[
+                            Container(height=15),
+                            Text(value='Profilephoto',text_align='center'),
+                            Container(height=30),
+                            Text(value='Username',text_align='center'),
+                            Divider(thickness=2,color='white'),
+                            NavigationDrawerDestination(
+                                    label="Settings",
+                                    icon=icons.SETTINGS_OUTLINED,
+                                    ),
+                            NavigationDrawerDestination(
+                                    label="Another option idk",
+                                    icon=icons.READ_MORE,
+                                    )
+                                    ]
+                ),
+
+                bottom_appbar = NavigationBar(
+                        bgcolor=CG,
+                        selected_index=0,
+                        on_change=lambda e:changetab(e),
+                        destinations=[
+                        NavigationDestination(label='Home',icon=icons.HOME_OUTLINED,selected_icon=icons.HOME),
+                        NavigationDestination(label='Analysis',icon=icons.ANALYTICS_OUTLINED,selected_icon=icons.ANALYTICS),
+                        NavigationDestination(label='Categories',icon=icons.CATEGORY_OUTLINED,selected_icon=icons.CATEGORY),
+                        NavigationDestination(label='EditData',icon=icons.DATASET_OUTLINED,selected_icon=icons.DATASET),
+                        ]
+                         )
+                ),
+           '/AddData_Contents':View('/AddData_Contents',[Container(expand=True,
                                                  bgcolor=BG,
-                                                 content=Add_Data_Contents)]),
+                                                 content=AddData_Contents)],
+                                        AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:go_back_tomainpage(),tooltip='Go back'),#on long press do nothing/dismiss
+                                                bgcolor=CG,
+                                                title=Text('Expense today',size=20))),
             '/Settings':View('/Settings',[Container(
                 expand=True,
                 bgcolor=FG,
-                content=Settings_Contents)]),
-            '/EditDataPage':View('EditDataPage',[Container(
-                expand=True,
-                bgcolor=FG,
-                content=Editdata_Contents
-
-            ),date_picker2])
+                content=Settings_Contents)])
                 }
-    
+    def go_back_tomainpage():
+        page.go("/")
+        page.update()
 #####################################################################################################################
     def changetab(e):
         my_index = e.control.selected_index
-        Home_Page.visible = True if my_index == 0 else False
-        Analysis_Page.visible = True if my_index == 1 else False
-        Category_Page.visible = True if my_index == 2 else False
-        More_Page.visible = True if my_index == 3 else False
-        page.update()
+        #remove this later
+        # my_index=1
+        if my_index == 0:
+            Home_Page.visible = True 
+            page.views[0].appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker'))
+        else:
+            Home_Page.visible=False
 
-    def savecurrentindexNavigation(e):
-        pass
+
+        if my_index == 1:
+            Analysis_Page.visible = True
+            page.views[0].appbar=AppBar(bgcolor=CG,title=Text('Analysis'))
+        else :
+            Analysis_Page.visible = False
+
+
+        if my_index == 2:
+            Category_Page.visible = True
+            page.views[0].appbar=AppBar(bgcolor=CG,title=Text('Categories'))
+        else :
+            Category_Page.visible = False
+
+
+        if my_index == 3:
+            EditData_Page.visible = True
+            page.views[0].appbar=AppBar(bgcolor=CG,title=Text('Edit Data'))
+        else :
+            EditData_Page.visible = False
+
+        page.update()
 
 
     def change_route(route):
 
-        page.views.clear()
-        page.views.append(
-                pages[page.route]
-                )
-        
+        global on_start
         if page.route=='/':
 
-            page.views[-1].floating_action_button = FloatingActionButton(icon=icons.ADD,
-                                                       bgcolor=colors.WHITE,
-                                                       #foreground_color=colors.BLACK,
-                                                       shape=CircleBorder(),
-                                                       on_click=lambda _:page.go('/AddData'))
-    
-            page.views[-1].floating_action_button_location = FloatingActionButtonLocation.CENTER_DOCKED
+            if on_start:
+                build_editdata()
+                show_daily_analysis(date)
+                rebuild_category_container()
 
-            page.views[-1].bottom_appbar = NavigationBar(
-                        bgcolor=colors.BLACK12,
-                        on_change=lambda e:changetab(e),
-                        destinations=[
-                            NavigationDestination(label='Home',icon=icons.HOME_OUTLINED,selected_icon=icons.HOME),
-                            NavigationDestination(label='Analysis',icon=icons.ANALYTICS_OUTLINED,selected_icon=icons.ANALYTICS),
-                            NavigationDestination(label='Categories',icon=icons.CATEGORY_OUTLINED,selected_icon=icons.CATEGORY),
-                            NavigationDestination(label='More',icon=icons.MORE_HORIZ_OUTLINED,selected_icon=icons.MORE_HORIZ),
-                            ])
-            
+
+                page.views.clear()
+                page.views.append(
+                pages['/']
+                )
+
+
+
+
+
+                on_start=False
+                
+            else:
+                page.views.pop()
+
+
+
+        else:
+            page.views.append(
+                pages[page.route]
+                )
 
             
         page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
         page.update()
+        on_start=False
 
 #####################################################################################################################
 
-    page.add(
-        Initial_Page,date_picker1
-        )
-    show_daily_analysis(date)
-    rebuild_category_container()
-    build_editdata()
-    analysis_dropdown.value="Day"
+    page.go('/')
 
+    
+
+    analysis_dropdown.value="Day"
     page.on_route_change= change_route 
 
 
