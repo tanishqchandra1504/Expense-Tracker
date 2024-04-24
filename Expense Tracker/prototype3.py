@@ -24,7 +24,7 @@ def main(page:Page):
         'Orange', 'Purple', 'Dark Green', 'Maroon', 'Teal', 'Olive',
         'Brown', 'Navy', 'Gray', 'Pink', 'Maroon', 'Orange Red'
     ]
-    page.padding=0
+
     dropdown_options = [
             dropdown.Option(color_options[i], color_names[i]) for i in range(len(color_options))
         ]
@@ -808,6 +808,7 @@ def main(page:Page):
         first_date=datetime.datetime(2024,1,1),
         current_date=datetime.datetime.today(),
         last_date=datetime.datetime.today(),
+
     )
     def change_date2(e):
         # page.views[-1].controls[0].content.controls[1].controls[0].content.controls[1].content.value=Text(date_picker.value.strftime("%d %m %y"))
@@ -822,6 +823,7 @@ def main(page:Page):
         first_date=datetime.datetime(2024,1,1),
         current_date=datetime.datetime.today(),
         last_date=datetime.datetime.today(),
+
     )
 
     month_picker=CupertinoDatePicker(
@@ -1121,7 +1123,8 @@ def main(page:Page):
                                     Home_Page,
                                     Analysis_Page,
                                     Category_Page,
-                                    EditData_Page
+                                    EditData_Page,
+
 
                                     ]
                                 )
@@ -1131,18 +1134,17 @@ def main(page:Page):
     
 #####################################################################################################################
 
-    pages={'/':View('/',[Initial_Page,date_picker1,date_picker2],floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
+    pages={'/':View('/',[Initial_Page],floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
                                         bgcolor=colors.WHITE,
                                                        #foreground_color=colors.BLACK,
                                         shape=CircleBorder(),
                                         width=50,
                                         on_click=lambda _:page.go('/AddData_Contents')),
-    
-                floating_action_button_location = FloatingActionButtonLocation.CENTER_DOCKED,
+               floating_action_button_location = FloatingActionButtonLocation.CENTER_DOCKED,
 
-                appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker',size=20,color='white')),
+                appbar=AppBar(automatically_imply_leading=False,bgcolor=CG,title=Text('ExpenseTracker',size=20,color='white'),actions=[IconButton(icon=icons.MENU,on_click=lambda e:show_drawer(e))]),
 
-                drawer = NavigationDrawer(
+                end_drawer = NavigationDrawer(
                             controls=[
                             Container(height=15),
                             Text(value='Profilephoto',text_align='center'),
@@ -1186,11 +1188,15 @@ def main(page:Page):
     def go_back_tomainpage():
         page.go("/")
         page.update()
+
 #####################################################################################################################
+    def show_drawer(e):
+        page.views[0].end_drawer.open = True
+        page.views[0].update()
+    # def show_end_drawer(e):
+    #     page.views[0].show_end_drawer(end_drawer)
     def changetab(e):
         my_index = e.control.selected_index
-        #remove this later
-        # my_index=1
         if my_index == 0:
             Home_Page.visible = True 
             page.views[0].appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker'))
@@ -1237,10 +1243,6 @@ def main(page:Page):
                 pages['/']
                 )
 
-
-
-
-
                 on_start=False
                 
             else:
@@ -1259,13 +1261,13 @@ def main(page:Page):
         on_start=False
 
 #####################################################################################################################
-
+    
     page.go('/')
 
-    
 
     analysis_dropdown.value="Day"
     page.on_route_change= change_route 
+    page.overlay.extend([date_picker1,date_picker2])
 
 
 flet.app(target=main)
