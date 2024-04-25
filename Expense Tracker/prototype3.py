@@ -8,13 +8,12 @@ import graphs
 
 
 def main(page:Page):
-    global on_start
     BG = '#041955'
     FWG = '#97b4ff'
     FG = '#3450a1'
     PINK = '#eb06ff'
     CG='#201D1D'
-    on_start=True
+
     color_options = [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF',
         '#FFA500', '#800080', '#008000', '#800000', '#008080', '#808000',
@@ -64,6 +63,8 @@ def main(page:Page):
     )
     date=datetime.datetime.now().strftime("%d %m %Y")
     month=date[3:5]
+
+    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit())
 #####################################################################################################################
 # initializing pages
     category_container = ListView(
@@ -96,16 +97,15 @@ def main(page:Page):
         daterange=date1+' - '+date2
         return daterange
 #####################################################################################################################
-
+    # Home_Page_Contents.controls[0].content.controls=graphs.home_piechart(date)
     Home_Page_Contents=Row(                                                         #DAILY GRAPHS WILL APPEAR IN HOME PAGE
         controls=[Container(expand=True,
-                        bgcolor=colors.CYAN,
+                        bgcolor=colors.GREY_900,
                         padding=padding.only(top=50,left=20,
                                 right=20,bottom=5),
                                 content=ListView(
-                                    controls=[
-                                        graphs.home_piechart(date)[0],graphs.home_piechart(date)[1]
-                                    ]
+                                    padding=0,
+                                    controls=graphs.home_piechart(date),
                                 )
                                         )
                                     ]
@@ -114,7 +114,7 @@ def main(page:Page):
     Analysis_Daily_Contents=Row(
             controls=[Container(expand=True,
                                 bgcolor=colors.TEAL,
-                                padding=padding.only(top=50,left=20,right=20,bottom=5),
+                                padding=padding.only(top=10,left=20,right=20,bottom=5),
                                 content=ListView(auto_scroll=False,controls=[
                                                 Row(
                                                     alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -157,10 +157,9 @@ def main(page:Page):
                                                         ),
                                                 ]),
 
-                                                Container(#graph
-                                                            width=200,
-                                                            height=200,
-
+                                                Container(#graph here
+                                                            padding=30,
+                                                            content=graphs.daily_piechart(date)
                                                         ),
 
                                                 Column(#analysis list
@@ -178,7 +177,7 @@ def main(page:Page):
     Analysis_Weekly_Contents=Row(
         controls=[Container(expand=True,
                             bgcolor=colors.TEAL,
-                            padding=padding.only(top=50,left=20,right=20,bottom=5),
+                            padding=padding.only(top=10,left=20,right=20,bottom=5),
                             content=ListView(auto_scroll=False,controls=[
                                             Row(
                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -243,7 +242,7 @@ def main(page:Page):
     Analysis_Monthly_Contents=Row(
         controls=[Container(expand=True,
                             bgcolor=colors.TEAL,
-                            padding=padding.only(top=50,left=20,right=20,bottom=5),
+                            padding=padding.only(top=10,left=20,right=20,bottom=5),
                             content=ListView(auto_scroll=False,controls=[
                                             Row(
                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -310,11 +309,12 @@ def main(page:Page):
                         )
             ]
         )
-
+    
+    #Analysis_Contents.controls[0].content.controls[2].content=graphs.daily_piechart(date)
     Analysis_Contents=Row(                                                     #ALL GRAPHS IN ANALYSIS PAGE
         controls=[Container(expand=True,
-                        bgcolor=colors.TEAL,
-                        padding=padding.only(top=50,left=20,
+                        bgcolor=colors.GREY_800,
+                        padding=padding.only(top=10,left=20,
                                 right=20,bottom=5),
                                 content=ListView(auto_scroll=False,
                                                  controls=[
@@ -325,8 +325,6 @@ def main(page:Page):
 
                                                 ]
                                             ),
-
-                                            #daily
                                             Row(#date picker
                                                 alignment=MainAxisAlignment.CENTER,
                                                 controls=[
@@ -362,9 +360,8 @@ def main(page:Page):
                                             ]),
 
                                             Container(#graph
-                                                        width=200,
-                                                        height=200,
-
+                                                        padding=30,
+                                                        content=graphs.daily_piechart(date),
                                                     ),
 
                                             Column(#analysis list
@@ -421,13 +418,12 @@ def main(page:Page):
                                     ]
                                 )
     
-
     EditData_Contents=Row(                                                        #PARTH CODE FOR EDIT DATA PAGE
         controls=[Container(expand=True,
                            bgcolor=FWG,
                            padding=padding.only(top=50, left=20,
                                                right=20, bottom=5),
-                           content=Column(controls=[
+                           content=ListView(controls=[
                                 Row(#date picker
                                 alignment=MainAxisAlignment.CENTER,
                                 controls=[
@@ -466,7 +462,7 @@ def main(page:Page):
                                 ]
                             ),
 
-                            Divider(color=BG,height=2),
+                            Divider(color=BG,height=10,thickness=2),
 
                             editdata_list,
                            ]
@@ -489,31 +485,9 @@ def main(page:Page):
                            )
                   ]
               )
-
-#####################################################################################################################
-#all the functions
-    #Route functions
-    # def shrink(e):
-    #     page_2.controls[0].expand=False
-    #     page_2.controls[0].width=page.width/2
-    #     page_2.controls[0].scale=transform.Scale(0.8,alignment.center_right)
-    #     page_2.controls[0].border_radius=25
-    #     page_2.update()
-
-    # def restore(e):
-    #     page_2.controls[0].width=page.width
-    #     page_2.controls[0].scale=transform.Scale(1,alignment.center_right)
-    #     page_2.controls[0].border_radius=None
-    #     page_2.update()
-
-    # def change_route(route):
-    #     page.views.clear()
-    #     page.views.append(
-    #         pages[page.route]
-    #     )
-    #     page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
-    #     page.update()
     
+#####################################################################################################################
+
     def add_category():
         new_category = category_input.value
         new_color = category_color_dropdown.value
@@ -529,7 +503,7 @@ def main(page:Page):
                 category_color_dropdown.value = None
                 # category_input.on_submit =lambda _: add_category()  # Reset the on_submit function lookupagain
                 update_dropdown()
-                page.views[0].update()
+                page.update()
 
     def show_duplicate_dialog(category):
         global dialog
@@ -545,12 +519,12 @@ def main(page:Page):
         )
         page.views[0].dialog = dialog
         dialog.open = True
-        page.views[0].update()
+        page.update()
 
     def close_dialog():
         global dialog
         dialog.open = False
-        page.views[0].update()
+        page.update()
 
     def add_category_row(category, color):
         category_container.controls.append(Container(bgcolor=BG, border_radius=10, padding=15, content=
@@ -581,7 +555,7 @@ def main(page:Page):
                 ]
             )
         ))
-        page.views[0].update()
+        page.update()
 
     def edit_category(category):
         category_index = category_list.index(category)
@@ -608,10 +582,10 @@ def main(page:Page):
             category_input.value = ""
             category_color_dropdown.value = None
             category_input.on_submit = add_category  # Reset the on_submit function
-            page.views[0].update()
+            page.update()
         category_input.on_submit = update_category
         category_input.focus()  # Set focus to the text field
-        page.views[0].update()
+        page.update()
 
     def edit_expense(category,amount,date):
         EditData_Contents.controls[0].content.controls[1].controls[0].value=category
@@ -625,10 +599,10 @@ def main(page:Page):
             Input_Amount.value=None
             Input_Amount.on_submit=lambda _:add_expense()
             EditData_Contents.controls[0].content.controls[1].controls[0].value=None
-            page.views[0].update()
+            page.update()
         Input_Amount.on_submit=lambda _: update_expense()
         Input_Amount.focus()
-        page.views[0].update()
+        page.update()
     def delete_category(category):
         category_index = category_list.index(category)
 
@@ -657,9 +631,9 @@ def main(page:Page):
             on_dismiss=lambda e: print("Dialog dismissed!"),
         )
 
-        page.views[0].dialog = dialog
+        page.dialog = dialog
         dialog.open = True
-        page.views[0].update()
+        page.update()
     
     def rebuild_category_container():
         category_container.controls.clear()
@@ -676,7 +650,7 @@ def main(page:Page):
         #reset the dropdown and texfield
         EditData_Contents.controls[0].content.controls[1].controls[0].value=None
         Input_Amount.value=None
-        page.views[0].update()
+        page.update()
     
     def add_expense1():
         category=AddData_Contents.controls[0].content.controls[1].controls[0].value
@@ -686,12 +660,12 @@ def main(page:Page):
         Input_Amount1.value=None
         AddData_Contents.controls[0].content.controls[1].controls[0].value=None
         open_snackbar_addedexpense()
-        page.views[1].update()
+        page.update()
 
     def open_snackbar_addedexpense():
-        page.views[1].snack_bar=SnackBar(content=Text("Expense Added Successfully!"),duration=3000,
+        page.snack_bar=SnackBar(content=Text("Expense Added Successfully!"),duration=3000,
                                behavior=SnackBarBehavior.FLOATING,show_close_icon=True)
-        page.views[1].snack_bar.open=True
+        page.snack_bar.open=True
 
 
     def add_editdata_row(category_color,category,amount,date):
@@ -753,6 +727,7 @@ def main(page:Page):
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=(date_picker1.value.strftime("%d %m %Y"))
         date=date_picker1.value.strftime("%d %m %Y")
         show_daily_analysis(date)
+        
         # build_editdata()
         page.update()
     date_picker1 = DatePicker(
@@ -789,9 +764,10 @@ def main(page:Page):
     def change_month():
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=month_picker.value.strftime("%m %Y")
         show_monthly_analysis(month_picker.value.strftime("%m %Y"))
-        page.views[0].update()
+        page.update()
 
     def show_daily_analysis(date):
+        Analysis_Contents.controls[0].content.controls[2].content=graphs.daily_piechart(date)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
@@ -842,7 +818,7 @@ def main(page:Page):
                                                                 
                                                             ),
                 )
-        page.views[0].update()
+        page.update()
 
     def show_weekly_analysis(week):
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
@@ -962,7 +938,7 @@ def main(page:Page):
             Analysis_Contents.controls[0]=Analysis_Monthly_Contents.controls[0]
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=datetime.datetime.now().strftime("%m %Y")
             show_monthly_analysis(datetime.datetime.now().strftime("%m %Y"))
-        page.views[0].update()
+        page.update()
 
     def previous_date_dp():
         presentday_str='-'.join(list((EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
@@ -971,7 +947,7 @@ def main(page:Page):
         EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
         date=yesterday.strftime('%d %m %Y')
         build_editdata()
-        page.views[0].update()
+        page.update()
 
     def next_date_dp():
         presentday_str='-'.join(list((EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
@@ -983,7 +959,7 @@ def main(page:Page):
             EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
             date=tomorrow.strftime('%d %m %Y')
             build_editdata()
-            page.views[0].update()
+            page.update()
 
     def previous_date():
         presentday_str='-'.join(list((Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value).split())[::-1])
@@ -992,7 +968,7 @@ def main(page:Page):
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
         date=yesterday.strftime('%d %m %Y')
         show_daily_analysis(date)
-        page.views[0].update()
+        page.update()
     
     def next_date():
 
@@ -1005,7 +981,7 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
             date=tomorrow.strftime('%d %m %Y')
             show_daily_analysis(date)
-            page.views[0].update()
+            page.update()
 
     def previous_week():
         prvweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value-1
@@ -1013,7 +989,7 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=prvweek
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(prvweek)
             show_weekly_analysis(prvweek)
-        page.views[0].update()
+        page.update()
 
     def next_week():
         nextweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value+1
@@ -1021,7 +997,7 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=nextweek
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(nextweek)
             show_weekly_analysis(nextweek)
-        page.views[0].update()
+        page.update()
 
     def previous_month():
         presentmonth_str='01 '+Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value #or month_picker.value
@@ -1032,7 +1008,7 @@ def main(page:Page):
         prvmonth_str=prvmonth.strftime("%m %Y")
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=prvmonth_str
         show_monthly_analysis(prvmonth_str)
-        page.views[0].update()
+        page.update()
     
     def next_month():
         mmyyyy=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value #or month_picker.value
@@ -1056,7 +1032,7 @@ def main(page:Page):
         else:   
             #enter dialog here
             pass
-        page.views[0].update()
+        page.update()
 
 #####################################################################################################################
     
@@ -1077,8 +1053,6 @@ def main(page:Page):
                                     Analysis_Page,
                                     Category_Page,
                                     EditData_Page,
-
-
                                     ]
                                 )
                             )
@@ -1089,7 +1063,7 @@ def main(page:Page):
 
     pages={'/':View('/',[Initial_Page],floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
                                         bgcolor=colors.WHITE,
-                                                    #    foreground_color=colors.BLACK,
+                                                      #foreground_color=colors.BLACK,
                                         shape=CircleBorder(),
                                         width=50,
                                         on_click=lambda _:page.go('/AddData_Contents')),
@@ -1136,7 +1110,15 @@ def main(page:Page):
             '/Settings':View('/Settings',[Container(
                 expand=True,
                 bgcolor=FG,
-                content=Settings_Contents)])
+                content=Settings_Contents)]),
+            '/Login':View('/Login',[Container(padding=20,bgcolor=BG,expand=True,
+                            content=Column(
+                                alignment=MainAxisAlignment.CENTER,
+                                horizontal_alignment=CrossAxisAlignment.CENTER,
+                                controls=[
+                                    Input_username,
+                                ]
+                            ))])
                 }
     def go_back_tomainpage():
         page.go("/")
@@ -1144,8 +1126,8 @@ def main(page:Page):
 
 #####################################################################################################################
     def show_drawer(e):
-        page.views[0].end_drawer.open = True
-        page.views[0].update()
+        pages['/'].end_drawer.open = True
+        page.update()
     # def show_end_drawer(e):
     #     page.views[0].show_end_drawer(end_drawer)
     def changetab(e):
@@ -1153,6 +1135,8 @@ def main(page:Page):
         if my_index == 0:
             Home_Page.visible = True 
             page.views[0].appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker'))
+            Home_Page_Contents.controls[0].content.controls=graphs.home_piechart(date)
+
         else:
             Home_Page.visible=False
 
@@ -1160,6 +1144,7 @@ def main(page:Page):
         if my_index == 1:
             Analysis_Page.visible = True
             page.views[0].appbar=AppBar(bgcolor=CG,title=Text('Analysis'))
+            show_daily_analysis(Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value)
         else :
             Analysis_Page.visible = False
 
@@ -1181,29 +1166,18 @@ def main(page:Page):
 
 
     def change_route(route):
-
-        global on_start
         if page.route=='/':
-
-            if on_start:
-                build_editdata()
-                show_daily_analysis(date)
-                rebuild_category_container()
+            build_editdata()
+            show_daily_analysis(date)
+            rebuild_category_container()
 
 
-                page.views.clear()
-                page.views.append(
-                pages['/']
-                )
-
-                on_start=False
-                
-            else:
-                page.views.pop()
-
-
-
+            page.views.clear()
+            page.views.append(
+            pages['/']
+            )
         else:
+            page.views.clear()
             page.views.append(
                 pages[page.route]
                 )
@@ -1211,11 +1185,36 @@ def main(page:Page):
             
         page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
         page.update()
-        on_start=False
+
+
 
 #####################################################################################################################
     
-    page.go('/')
+
+    def username_submit():
+        database.submit_username(Input_username.value)
+        page.views.clear()
+        page.views.append(pages['/'])
+        page.views[-1].padding=0 
+        build_editdata()
+        show_daily_analysis(date)
+        rebuild_category_container()
+
+ 
+
+    if database.check_username():
+        page.views.append(pages['/Login'])
+        page.views[-1].padding=0
+        page.update()
+        
+    
+    else:
+        page.views.append(pages['/'])
+        page.views[-1].padding=0 
+        build_editdata()
+        show_daily_analysis(date)
+        rebuild_category_container()
+
 
 
     analysis_dropdown.value="Day"

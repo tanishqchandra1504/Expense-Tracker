@@ -3,6 +3,19 @@ import database
 
 def daily_piechart(date):
     expense_list=database.show_daily_expense(date)
+    if len(expense_list)==0:
+        return ft.PieChart(
+            sections=[
+                ft.PieChartSection(
+                    value=100,
+                    title="No data to display",
+                    title_position=0,
+                    color="grey",
+                    radius=100,
+                )
+            ],
+            center_space_radius=0,
+        )
     # date in str format
     normal_radius = 100
     hover_radius = 110
@@ -44,8 +57,8 @@ def daily_piechart(date):
         piechart.sections.append(
             ft.PieChartSection(
                     value=amtclr[0],
-                    title=cat+f"({amtclr[0]/totalamt*100}"[:5]+"%)",
-                    title_position=1.6,
+                    title=cat+f" - {amtclr[0]}",
+                    title_position=0.7,
                     title_style=normal_title_style,
                     color=amtclr[1],
                     radius=normal_radius,
@@ -55,6 +68,19 @@ def daily_piechart(date):
 
 def home_piechart(date):
     expense_list=database.show_daily_expense(date)
+    if len(expense_list)==0:
+        return [ft.PieChart(
+            sections=[
+                ft.PieChartSection(
+                    value=100,
+                    title="No data to display",
+                    title_position=0,
+                    color="grey",
+                    radius=100,
+                )
+            ],
+            center_space_radius=0,
+        )]
     # date in str format
     normal_radius = 100
     hover_radius = 110
@@ -121,44 +147,27 @@ def home_piechart(date):
 
             ])
         )
-    count=0
     for cat in cat_dict:
         print(cat)
-        if count==2:
-            legends.content.controls.append(
-                ft.Row(controls=[
-                    ft.Container(
-                    content=ft.Text(value=cat),
-                    bgcolor=cat_dict[cat][1],
-                    padding=3,
-                    border_radius=5,
-                    expand=True,
-                    shadow=ft.BoxShadow(spread_radius=1,blur_radius=1,color=ft.colors.BLACK54)
-                    )
-                ])
-            )
-            count=0
-        else:
-            legends.content.controls[-1].controls.append(
+        legends.content.controls.append(
+            ft.Row(controls=[
                 ft.Container(
-                    content=ft.Text(value=cat),
-                    bgcolor=cat_dict[cat][1],
-                    padding=3,
-                    border_radius=5,
-                    expand=True,
-                    shadow=ft.BoxShadow(spread_radius=1,blur_radius=1,color=ft.colors.BLACK54)
+                content=ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN,controls=[ft.Text(value=cat),ft.Text(value=cat_dict[cat][0])]),
+                bgcolor=cat_dict[cat][1],
+                padding=ft.padding.only(top=3,bottom=3,left=20,right=10),
+                border_radius=5,
+                expand=True,
+                shadow=ft.BoxShadow(spread_radius=1,blur_radius=1,color=ft.colors.BLACK54)
                 )
-            )
-            count+=1
+            ]))
 
-    legendchart=ft.Container(
-        expand=True,
-        content=ft.Column(
-            controls=[
-                piechart,
-                legends
-
-            ]
-        )
-    )
+    # legendchart=ft.Container(
+    #     expand=True,
+    #     content=ft.Column(
+    #         controls=[
+    #             piechart,
+    #             legends
+    #         ]
+    #     )
+    # )
     return [piechart,legends]

@@ -42,6 +42,13 @@ def check_username():
     else:
         return False
 
+def submit_username(name):
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("INSERT INTO username VALUES(?)",(name,))
+    conn.commit()
+    conn.close()
+
 def show_all_categories():
     conn=ConnectToDatabase()
     c=conn.cursor()
@@ -168,7 +175,16 @@ def input_colors():
         c.execute("UPDATE expenses SET color=(?) WHERE category_name=(?)",(clr,cat))
     conn.commit()
     conn.close()
-input_colors()
+def sumofday(date):
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("SELECT amount FROM expenses WHERE Date=(?)",(date,))
+    items=c.fetchall()
+    if len(items)==0:
+        return False
+    daysum=sum(x[0] for x in items)
+    return daysum
+# input_colors()
 # print(get_category_color(ConnectToDatabase(),"Cat1"))
 
 # check_username(ConnectToDatabase())
