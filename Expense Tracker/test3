@@ -77,9 +77,8 @@ def main(page:Page):
 #####################################################################################################################
 #initializing some functions 
     def goto_editdata():
-        # page.go('/EditData')
-        # page.update()
-        pass
+        page.go('/EditData')
+        page.update()
 
     def isleapyear(y:int):
         if y%400==0 or (y%4==0 and y%100!=0):
@@ -529,7 +528,7 @@ def main(page:Page):
                 category_color_dropdown.value = None
                 # category_input.on_submit =lambda _: add_category()  # Reset the on_submit function lookupagain
                 update_dropdown()
-                page.views[0].update()
+                page.update()
 
     def show_duplicate_dialog(category):
         global dialog
@@ -543,14 +542,14 @@ def main(page:Page):
             ],
             on_dismiss=lambda e: print("Dialog dismissed!"),
         )
-        page.views[0].dialog = dialog
+        page.dialog = dialog
         dialog.open = True
-        page.views[0].update()
+        page.update()
 
     def close_dialog():
         global dialog
         dialog.open = False
-        page.views[0].update()
+        page.update()
 
     def add_category_row(category, color):
         category_container.controls.append(Container(bgcolor=BG, border_radius=10, padding=15, content=
@@ -581,7 +580,7 @@ def main(page:Page):
                 ]
             )
         ))
-        page.views[0].update()
+        page.update()
 
     def edit_category(category):
         category_index = category_list.index(category)
@@ -608,10 +607,10 @@ def main(page:Page):
             category_input.value = ""
             category_color_dropdown.value = None
             category_input.on_submit = add_category  # Reset the on_submit function
-            page.views[0].update()
+            page.update()
         category_input.on_submit = update_category
         category_input.focus()  # Set focus to the text field
-        page.views[0].update()
+        page.update()
 
     def edit_expense(category,amount,date):
         EditData_Contents.controls[0].content.controls[1].controls[0].value=category
@@ -625,10 +624,10 @@ def main(page:Page):
             Input_Amount.value=None
             Input_Amount.on_submit=lambda _:add_expense()
             EditData_Contents.controls[0].content.controls[1].controls[0].value=None
-            page.views[0].update()
+            page.update()
         Input_Amount.on_submit=lambda _: update_expense()
         Input_Amount.focus()
-        page.views[0].update()
+        page.update()
     def delete_category(category):
         category_index = category_list.index(category)
 
@@ -657,9 +656,9 @@ def main(page:Page):
             on_dismiss=lambda e: print("Dialog dismissed!"),
         )
 
-        page.views[0].dialog = dialog
+        page.dialog = dialog
         dialog.open = True
-        page.views[0].update()
+        page.update()
     
     def rebuild_category_container():
         category_container.controls.clear()
@@ -676,7 +675,7 @@ def main(page:Page):
         #reset the dropdown and texfield
         EditData_Contents.controls[0].content.controls[1].controls[0].value=None
         Input_Amount.value=None
-        page.views[0].update()
+        page.update()
     
     def add_expense1():
         category=AddData_Contents.controls[0].content.controls[1].controls[0].value
@@ -686,12 +685,12 @@ def main(page:Page):
         Input_Amount1.value=None
         AddData_Contents.controls[0].content.controls[1].controls[0].value=None
         open_snackbar_addedexpense()
-        page.views[1].update()
+        page.update()
 
     def open_snackbar_addedexpense():
-        page.views[1].snack_bar=SnackBar(content=Text("Expense Added Successfully!"),duration=3000,
+        page.snack_bar=SnackBar(content=Text("Expense Added Successfully!"),duration=3000,
                                behavior=SnackBarBehavior.FLOATING,show_close_icon=True)
-        page.views[1].snack_bar.open=True
+        page.snack_bar.open=True
 
 
     def add_editdata_row(category_color,category,amount,date):
@@ -789,7 +788,7 @@ def main(page:Page):
     def change_month():
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=month_picker.value.strftime("%m %Y")
         show_monthly_analysis(month_picker.value.strftime("%m %Y"))
-        page.views[0].update()
+        page.update()
 
     def show_daily_analysis(date):
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
@@ -842,7 +841,7 @@ def main(page:Page):
                                                                 
                                                             ),
                 )
-        page.views[0].update()
+        page.update()
 
     def show_weekly_analysis(week):
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
@@ -962,7 +961,7 @@ def main(page:Page):
             Analysis_Contents.controls[0]=Analysis_Monthly_Contents.controls[0]
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=datetime.datetime.now().strftime("%m %Y")
             show_monthly_analysis(datetime.datetime.now().strftime("%m %Y"))
-        page.views[0].update()
+        page.update()
 
     def previous_date_dp():
         presentday_str='-'.join(list((EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
@@ -971,7 +970,7 @@ def main(page:Page):
         EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
         date=yesterday.strftime('%d %m %Y')
         build_editdata()
-        page.views[0].update()
+        page.update()
 
     def next_date_dp():
         presentday_str='-'.join(list((EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value).split())[::-1])
@@ -983,7 +982,7 @@ def main(page:Page):
             EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
             date=tomorrow.strftime('%d %m %Y')
             build_editdata()
-            page.views[0].update()
+            page.update()
 
     def previous_date():
         presentday_str='-'.join(list((Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value).split())[::-1])
@@ -992,7 +991,7 @@ def main(page:Page):
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=yesterday.strftime('%d %m %Y')
         date=yesterday.strftime('%d %m %Y')
         show_daily_analysis(date)
-        page.views[0].update()
+        page.update()
     
     def next_date():
 
@@ -1005,7 +1004,7 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=tomorrow.strftime('%d %m %Y')
             date=tomorrow.strftime('%d %m %Y')
             show_daily_analysis(date)
-            page.views[0].update()
+            page.update()
 
     def previous_week():
         prvweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value-1
@@ -1013,7 +1012,7 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=prvweek
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(prvweek)
             show_weekly_analysis(prvweek)
-        page.views[0].update()
+        page.update()
 
     def next_week():
         nextweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value+1
@@ -1021,7 +1020,7 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=nextweek
             Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(nextweek)
             show_weekly_analysis(nextweek)
-        page.views[0].update()
+        page.update()
 
     def previous_month():
         presentmonth_str='01 '+Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value #or month_picker.value
@@ -1032,7 +1031,7 @@ def main(page:Page):
         prvmonth_str=prvmonth.strftime("%m %Y")
         Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=prvmonth_str
         show_monthly_analysis(prvmonth_str)
-        page.views[0].update()
+        page.update()
     
     def next_month():
         mmyyyy=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value #or month_picker.value
@@ -1056,7 +1055,7 @@ def main(page:Page):
         else:   
             #enter dialog here
             pass
-        page.views[0].update()
+        page.update()
 
 #####################################################################################################################
     
