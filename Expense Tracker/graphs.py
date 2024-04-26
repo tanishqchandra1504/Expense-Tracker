@@ -4,8 +4,8 @@ import datetime
 import copy
 
 def daily_piechart(date):
-    expense_list=database.show_daily_expense(date)
-    if len(expense_list)==0:
+    cat_dict=database.show_categorywise_daily_expense(date)
+    if len(cat_dict)==0:
         return ft.PieChart(
             sections=[
                 ft.PieChartSection(
@@ -25,7 +25,7 @@ def daily_piechart(date):
         size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
     )
     hover_title_style = ft.TextStyle(
-        size=16,
+        size=14,
         color=ft.colors.WHITE,
         weight=ft.FontWeight.BOLD,
         shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
@@ -47,20 +47,13 @@ def daily_piechart(date):
         on_chart_event=chart_event,
         expand=True,
     )
-
-    cat_dict={}
-    for cat,clr,amt,d,w in expense_list:
-        if cat in cat_dict:
-            cat_dict[cat][0]+=amt
-        else:
-            cat_dict[cat]=[amt,clr]
     totalamt=sum([x[0] for x in cat_dict.values()])
     for cat,amtclr in cat_dict.items():
         piechart.sections.append(
             ft.PieChartSection(
                     value=amtclr[0],
                     title=cat+f" - {amtclr[0]}",
-                    title_position=0.7,
+                    title_position=1,
                     title_style=normal_title_style,
                     color=amtclr[1],
                     radius=normal_radius,
@@ -69,8 +62,8 @@ def daily_piechart(date):
     return piechart
 
 def home_piechart(date):
-    expense_list=database.show_daily_expense("25 04 2024")
-    if len(expense_list)==0:
+    cat_dict=database.show_categorywise_daily_expense(date)
+    if len(cat_dict)==0:
         return [ft.PieChart(
             sections=[
                 ft.PieChartSection(
@@ -112,13 +105,7 @@ def home_piechart(date):
         on_chart_event=chart_event,
         expand=True,
     )
-
-    cat_dict={}
-    for cat,clr,amt,d,w in expense_list:
-        if cat in cat_dict:
-            cat_dict[cat][0]+=amt
-        else:
-            cat_dict[cat]=[amt,clr]
+    
     totalamt=sum([x[0] for x in cat_dict.values()])
 
     cat_list=list(cat_dict.keys())
@@ -142,13 +129,7 @@ def home_piechart(date):
             ]
         )
     )
-
-    # for cat in cat_dict:
-    #     legends.content.controls.append(
-    #         ft.Row(controls=[
-
-    #         ])
-    #     )
+    cat_dict=dict(sorted(cat_dict.items(),key=lambda x:x[1][0],reverse=True))
     for cat in cat_dict:
         legends.content.controls.append(
             ft.Row(controls=[
@@ -286,7 +267,6 @@ def weekly_linechart(weekno):
     date=datetime.datetime(2023,12,31)
     for i in range(weekno):
         date=date+datetime.timedelta(7)
-    print(date)
     data_1=[ft.LineChartData(data_points=[],
                            color=ft.colors.with_opacity(1, ft.colors.GREEN),
             below_line_bgcolor=ft.colors.with_opacity(0.2, ft.colors.LIGHT_GREEN),
