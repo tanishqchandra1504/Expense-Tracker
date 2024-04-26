@@ -25,7 +25,7 @@ def main(page:Page):
     dropdown_options = [
             dropdown.Option(color_options[i], color_names[i]) for i in range(len(color_options))
         ]
-    
+     
     #initializing category names and colors
     category_list,category_colors=tuple(zip(*database.show_all_categories(database.ConnectToDatabase())))
     category_list=list(category_list)

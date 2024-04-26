@@ -77,11 +77,6 @@ def main(page:Page):
     dialog= None
 #####################################################################################################################
 #initializing some functions 
-    def goto_editdata():
-        # page.go('/EditData')
-        # page.update()
-        pass
-
     def isleapyear(y:int):
         if y%400==0 or (y%4==0 and y%100!=0):
             return True
@@ -222,8 +217,9 @@ def main(page:Page):
                                             ]),
 
                                             Container(#graph
-                                                        width=200,
-                                                        height=200,
+                                                    padding=0,
+                                                    width=200,
+                                                    height=400,
 
                                                     ),
 
@@ -241,7 +237,7 @@ def main(page:Page):
     
     Analysis_Monthly_Contents=Row(
         controls=[Container(expand=True,
-                            bgcolor=colors.TEAL,
+                            bgcolor=colors.BLUE_GREY_900,
                             padding=padding.only(top=10,left=20,right=20,bottom=5),
                             content=ListView(auto_scroll=False,controls=[
                                             Row(
@@ -293,8 +289,9 @@ def main(page:Page):
                                             ]),
 
                                             Container(#graph
-                                                        width=200,
-                                                        height=200,
+                                                    padding=0,
+                                                    width=200,
+                                                    height=400,
 
                                                     ),
 
@@ -310,71 +307,7 @@ def main(page:Page):
             ]
         )
     
-    #Analysis_Contents.controls[0].content.controls[2].content=graphs.daily_piechart(date)
-    Analysis_Contents=Row(                                                     #ALL GRAPHS IN ANALYSIS PAGE
-        controls=[Container(expand=True,
-                        bgcolor=colors.GREY_800,
-                        padding=padding.only(top=10,left=20,
-                                right=20,bottom=5),
-                                content=ListView(auto_scroll=False,
-                                                 controls=[
-                                            Row(
-                                                alignment=MainAxisAlignment.SPACE_BETWEEN,
-                                                controls=[
-                                                    analysis_dropdown,
-
-                                                ]
-                                            ),
-                                            Row(#date picker
-                                                alignment=MainAxisAlignment.CENTER,
-                                                controls=[
-                                                    Card(
-                                                        width=210,
-                                                        height=50,
-                                                        color=BG,
-                                                        content=(
-                                                            Row(
-                                                                controls=[
-                                                                    IconButton(
-                                                                        width=30,
-                                                                        content=Icon(icons.ARROW_BACK_IOS),
-                                                                        on_click=lambda _ : previous_date(),
-                                                                    ),
-                                                                    TextButton(
-                                                                        width=120,
-                                                                        content=Text(datetime.datetime.now().strftime("%d %m %Y")),
-                                                                        on_click=lambda _: date_picker1.pick_date(),
-                                                                        
-
-
-                                                                    ),
-                                                                    IconButton(
-                                                                        width=30,
-                                                                        content=Icon(icons.ARROW_FORWARD_IOS),
-                                                                        on_click=lambda _ : next_date(),
-                                                                    )
-                                                                ]
-                                                            )
-                                                        )
-                                                    ),
-                                            ]),
-
-                                            Container(#graph
-                                                        padding=30,
-                                                        content=graphs.daily_piechart(date),
-                                                    ),
-
-                                            Column(#analysis list
-                                                controls=[
-                                                    #elements will be appended here
-                                                ]
-                                                
-                                            )
-                                        ]
-                                    ))
-                                    ]
-                                )
-    
+    Analysis_Contents=Analysis_Daily_Contents
     AddData_Contents=Row(                                                   #PARTH CODE FOR PLUS BUTTON IN HOME SCREEN
             controls=[Container(expand=True,
                         bgcolor=FG,
@@ -402,7 +335,7 @@ def main(page:Page):
                         )
                 ]
             )
- 
+
     Category_contents=Row(                                                             #TANISHQ CODE + PARTH SQL CODE HERE
         controls=[Container(expand=True,
                         bgcolor=colors.INDIGO,
@@ -791,7 +724,10 @@ def main(page:Page):
         )
 
         Analysis_Contents.controls[0].content.controls[3].controls.append(Divider(thickness=3,color="black"))
-        for item in database.show_daily_expense(date):
+
+        cat_dict=database.show_categorywise_daily_expense(date)
+
+        for cat in cat_dict:
                Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
@@ -806,8 +742,8 @@ def main(page:Page):
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+item[0],color="white",size=20),
-                                                                                    Text(str(item[2]) + "    ",color="white",size=20)
+                                                                                    Text("    "+cat,color="white",size=20),
+                                                                                    Text(str(cat_dict[cat][0]) + "    ",color="white",size=20)
                                                                                     
                                                                                 ]
                                                                             )
@@ -821,6 +757,7 @@ def main(page:Page):
         page.update()
 
     def show_weekly_analysis(week):
+        Analysis_Contents.controls[0].content.controls[2].content=graphs.weekly_linechart(week)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
@@ -843,7 +780,8 @@ def main(page:Page):
             )
         )
         Analysis_Contents.controls[0].content.controls[3].controls.append(Divider(thickness=3,color="black"))
-        for item in database.show_weekly_expense(week):
+        cat_dict=database.show_weekly_expense(week)
+        for cat in cat_dict:
             Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
@@ -858,8 +796,8 @@ def main(page:Page):
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+item[0],color="white",size=30),
-                                                                                    Text(str(item[2]) + "    ",color="white",size=30)
+                                                                                    Text("    "+cat,color="white",size=30),
+                                                                                    Text(str(cat_dict[cat][0]) + "    ",color="white",size=30)
                                                                                     
                                                                                 ]
                                                                             )
@@ -873,6 +811,7 @@ def main(page:Page):
         pass
 
     def show_monthly_analysis(month):
+        Analysis_Contents.controls[0].content.controls[2].content=graphs.monthly_linechart(month)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
@@ -895,7 +834,8 @@ def main(page:Page):
             )
         )
         Analysis_Contents.controls[0].content.controls[3].controls.append(Divider(thickness=3,color="black"))
-        for item in database.show_monthly_expense(month):
+        cat_dict=database.show_monthly_expense(month)
+        for cat in cat_dict:
             Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
@@ -910,8 +850,8 @@ def main(page:Page):
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+item[0],color="white",size=30),
-                                                                                    Text(str(item[2]) + "    ",color="white",size=30)
+                                                                                    Text("    "+cat,color="white",size=30),
+                                                                                    Text(str(cat_dict[cat][0]) + "    ",color="white",size=30)
                                                                                     
                                                                                 ]
                                                                             )
@@ -1133,18 +1073,19 @@ def main(page:Page):
     def changetab(e):
         my_index = e.control.selected_index
         if my_index == 0:
+            Home_Page_Contents.controls[0].content.controls=graphs.home_piechart(date)
             Home_Page.visible = True 
             page.views[0].appbar=AppBar(bgcolor=CG,title=Text('ExpenseTracker'))
-            Home_Page_Contents.controls[0].content.controls=graphs.home_piechart(date)
 
         else:
             Home_Page.visible=False
 
 
         if my_index == 1:
+            change_analysis_format()
             Analysis_Page.visible = True
             page.views[0].appbar=AppBar(bgcolor=CG,title=Text('Analysis'))
-            show_daily_analysis(Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value)
+            
         else :
             Analysis_Page.visible = False
 

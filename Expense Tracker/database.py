@@ -90,13 +90,35 @@ def show_daily_expense(date:str):
     conn.close()
     return items
 
+def show_categorywise_daily_expense(date:str):
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("SELECT * FROM expenses WHERE Date=(?) ORDER BY amount DESC",(date,))
+    items=c.fetchall()
+    conn.close()
+    cat_dict={}
+    for cat,clr,amt,d,w in items:
+        if cat in cat_dict:
+            cat_dict[cat][0]+=amt
+        else:
+            cat_dict[cat]=[amt,clr]
+    cat_dict=dict(sorted(cat_dict.items(),key=lambda x:x[1][0],reverse=True))
+    return cat_dict
+
 def show_weekly_expense(Week:int):
     conn=ConnectToDatabase()
     c=conn.cursor()
     c.execute("SELECT * FROM expenses WHERE Week=(?) ORDER BY amount DESC",(Week,))
     items=c.fetchall()
     conn.close()
-    return items
+    cat_dict={}
+    for cat,clr,amt,d,w in items:
+        if cat in cat_dict:
+            cat_dict[cat][0]+=amt
+        else:
+            cat_dict[cat]=[amt,clr]
+    cat_dict=dict(sorted(cat_dict.items(),key=lambda x:x[1][0],reverse=True))
+    return cat_dict
 
 def show_monthly_expense(monthyr:str):
     conn=ConnectToDatabase()
@@ -105,7 +127,14 @@ def show_monthly_expense(monthyr:str):
     c.execute("SELECT * FROM expenses WHERE SUBSTR(Date,4,7)=(?) ORDER BY amount DESC",(monthyr,))
     items=c.fetchall()
     conn.close()
-    return items
+    cat_dict={}
+    for cat,clr,amt,d,w in items:
+        if cat in cat_dict:
+            cat_dict[cat][0]+=amt
+        else:
+            cat_dict[cat]=[amt,clr]
+    cat_dict=dict(sorted(cat_dict.items(),key=lambda x:x[1][0],reverse=True))
+    return cat_dict
 
 def insert_expense(data:tuple):
     conn=ConnectToDatabase()
