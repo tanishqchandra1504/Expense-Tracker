@@ -68,7 +68,7 @@ def main(page:Page):
     date=datetime.datetime.now().strftime("%d %m %Y")
     month=date[3:5]
 
-    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit(),color=colors.GREEN_600,height=210)
+    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit(),color=colors.WHITE,height=210)
 #####################################################################################################################
 # initializing pages
     category_container = ListView(
@@ -424,72 +424,71 @@ def main(page:Page):
                   ]
               )
 
-    About_us_contents = Column(
-        [
-            Row(
-                controls=[
-                    Container(
+    About_us_contents = Container(expand=True,
+        content=Column(
+            horizontal_alignment=CrossAxisAlignment.CENTER,
+            controls=[
+                Container(
                         expand=True,
                         bgcolor=colors.GREY_900,
                         content=Image(
-                            src="iitpkd_logo.png",
-                            width=400,
-                            height=400,
+                            src="iitpkd_logo3.png",
+                            width=1200,
+                            height=1200,
                             fit=ImageFit.CONTAIN
                         ),
                     ),
-                    Column(
-                        controls=[
-                            Container(height=50),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Group Members: ",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Shelar Parth Vijay - 142301033",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Shreesh Amit Chembeti - 132301032",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Tanishq Chandra - 142301035",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                        ],
+                Container(height=20),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Group Members: ",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
                     ),
-                ],
-                spacing=1,
-            ),
-            Container(
-                height=50
-            ),
-            Container(
-                content=Text(
-                    "This is an Android app named 'Expense Tracker' created by us for 'Introduction to Programming' course Project 2024",
-                    size=20,
-                    color=colors.GREEN_600,
-                )
-            ),
-        ]
-    )
+                ),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Shelar Parth Vijay - 142301033",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
+                    ),
+                ),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Shreesh Amit Chembeti - 132301032",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
+                    ),
+                ),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Tanishq Chandra - 142301035",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
+                    ),
+                ),
+                Container(height=5),
+                Container(
+                    content=Text(
+                        "This is an Android app named 'Expense Tracker' created by us for 'Introduction to Programming' course Project 2024",
+                        size=20,
+                        color=colors.WHITE,
+                    )
+                ),
+                Container(height=30),
+            ],
+        )
+        )
+        
+    
 
 
 
@@ -1151,16 +1150,42 @@ def main(page:Page):
                 AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:page.go("/"),tooltip='Go back'),#on long press do nothing/dismiss
                                           bgcolor=CG,
                                           title=Text('About us',size=20))),
-            '/Login':View('/Login',[Container(padding=20,bgcolor=colors.GREY_900,expand=True,
-                                            animate=animation.Animation(600, AnimationCurve.DECELERATE),
-                            content=Column(
-                                alignment=MainAxisAlignment.CENTER,
-                                horizontal_alignment=CrossAxisAlignment.CENTER,
-                                controls=[Text(value='Login Page',text_align='center',size=60,color=colors.GREEN_600,weight=FontWeight.BOLD),
-                                    Input_username,
-                                ]
-                            ))])
+            '/Login':View('/Login',[
+                Container(
+                    padding=20,
+                    bgcolor=colors.GREY_900,
+                    expand=True,
+                    animate=animation.Animation(600, AnimationCurve.DECELERATE),
+                    content=Column(
+                        alignment=MainAxisAlignment.CENTER,
+                        horizontal_alignment=CrossAxisAlignment.CENTER,
+                        controls=[
+                            Container(
+                                padding=20,
+                                bgcolor=colors.GREEN_900,
+                                opacity=1,
+                                border_radius=10,
+                                content=Column(
+                                    controls=[
+                                        Text(
+                                            value='Login Page',
+                                            text_align='center',
+                                            size=60,
+                                            color=colors.WHITE,
+                                            weight=FontWeight.BOLD,
+                                        ),
+                                        Input_username,
+                                    ]
+                                )
+                            )
+                        ]
+                    )
+                )
+            ])
+
+            
                 }
+
     def go_back_tomainpage():
         page.go("/")
         page.update()
