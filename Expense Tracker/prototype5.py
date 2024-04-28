@@ -7,13 +7,15 @@ from copy import deepcopy
 #FEEL FREE TO CHANGE COLOURS
 
 
+weekno=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
 def main(page:Page):
+    global categoris_dropdown
     BG = '#041955'
     FWG = '#97b4ff'
     FG = '#3450a1'
     PINK = '#eb06ff'
     CG='#201D1D'
-
+    
     color_options = [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF',
         '#FFA500', '#800080', '#008000', '#800000', '#008080', '#808000',
@@ -42,7 +44,7 @@ def main(page:Page):
     category_list=list(category_list)
     category_colors=list(category_colors)
 
-#drop down for editdata page
+# drop down for editdata page
     categoris_dropdown=Dropdown(
         width=170,
         options=[dropdown.Option(category_list[i]) for i in range(len(category_list))],
@@ -173,6 +175,7 @@ def main(page:Page):
                             )
                 ]
             )
+
     Analysis_Weekly_Contents=Row(
         controls=[Container(expand=True,
                             bgcolor=colors.TEAL,
@@ -201,13 +204,9 @@ def main(page:Page):
                                                                         content=Icon(icons.ARROW_BACK_IOS),
                                                                         on_click=lambda _ : previous_week(),
                                                                     ),
-                                                                    TextButton(
-                                                                        width=120,
-                                                                        content=Text(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))),
-                                                                        on_click=lambda _: _,
-                                                                        visible=False
-                                                                    ),
-                                                                    Text(get_week_dates(database.get_week_no(datetime.datetime.today().strftime("%d %m %Y"))),color="white"),
+
+                                                                    Text(get_week_dates(weekno),color="white"),
+                                                                    
                                                                     IconButton(
                                                                         width=30,
                                                                         content=Icon(icons.ARROW_FORWARD_IOS),
@@ -581,7 +580,7 @@ def main(page:Page):
 
     #add expense through editdata page
     def add_expense():
-        category=categoris_dropdown.value #EditData_Contents.controls[0].content.controls[1].controls[0].value
+        category=EditData_Contents.controls[0].content.controls[1].controls[0].value
         amount=Input_Amount.value
         try:
             amount=float(amount)
@@ -597,13 +596,13 @@ def main(page:Page):
             pass
         finally:
             #reset the dropdown and texfield
-            categoris_dropdown.value=None#EditData_Contents.controls[0].content.controls[1].controls[0].value=None
+            EditData_Contents.controls[0].content.controls[1].controls[0].value=None
             Input_Amount.value=None
             page.update()
 
     #add expense through AddData page
     def add_expense1():
-        category=categoris_dropdown.value#AddData_Contents.controls[0].content.controls[1].controls[0].value
+        category=AddData_Contents.controls[0].content.controls[1].controls[0].value
         amount=Input_Amount1.value#AddData_Contents.controls[0].content.controls[1].controls[1].value
         try:
             amount=float(amount)
@@ -613,11 +612,12 @@ def main(page:Page):
             date=datetime.datetime.today().strftime("%d %m %Y")
             database.insert_expense((category,amount,date))
             open_snackbar_addedexpense()
-        except:
+        except Exception as exp:
+            print("exception",exp)
             open_error_snackbar()
         finally:
             Input_Amount1.value=None
-            categoris_dropdown.value=None#AddData_Contents.controls[0].content.controls[1].controls[0].value=None
+            AddData_Contents.controls[0].content.controls[1].controls[0].value=None
             page.update()
 
     def open_error_snackbar():
@@ -668,7 +668,7 @@ def main(page:Page):
 
     def update_dropdown():
         new_dropdown=Dropdown(
-        width=125,
+        width=170,
         options=[dropdown.Option(category_list[i]) for i in range(len(category_list))],
         # on_change=lambda _: print(new_dropdown.value)
         )
@@ -899,8 +899,7 @@ def main(page:Page):
 
         if analysis_dropdown.value=="Week":
             Analysis_Contents.controls[0]=Analysis_Weekly_Contents.controls[0]
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y")))
+            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].value=get_week_dates(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y")))
             show_weekly_analysis(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y")))
 
         if analysis_dropdown.value=="Month":
@@ -953,18 +952,20 @@ def main(page:Page):
             page.update()
 
     def previous_week():
-        prvweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value-1
+        global weekno
+        prvweek=weekno-1
         if (prvweek)>=0:
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=prvweek
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(prvweek)
+            weekno=prvweek
+            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].value=get_week_dates(prvweek)
             show_weekly_analysis(prvweek)
         page.update()
 
     def next_week():
-        nextweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value+1
+        global weekno
+        nextweek=weekno+1
         if database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))>=nextweek>=0:
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=nextweek
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(nextweek)
+            weekno=nextweek 
+            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].value=get_week_dates(nextweek)
             show_weekly_analysis(nextweek)
         page.update()
 
