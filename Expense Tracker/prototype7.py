@@ -73,7 +73,7 @@ def main(page:Page):
     #text field for AddData page
     Input_Amount1=TextField(hint_text="Enter amount", expand=True, on_submit=lambda _:add_expense1(),color=colors.GREEN_600)
     #text field for login page
-    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit(),color=colors.GREEN_600)
+    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit(),color=colors.WHITE)
 
     editdata_list=ListView(
         controls=[
@@ -437,72 +437,69 @@ def main(page:Page):
                   ]
               )
 
-    About_us_contents = Column(
-        [
-            Row(
-                controls=[
-                    Container(
+    About_us_contents = Container(expand=True,
+        content=Column(
+            horizontal_alignment=CrossAxisAlignment.CENTER,
+            controls=[
+                Container(
                         expand=True,
                         bgcolor=colors.GREY_900,
                         content=Image(
-                            src="iitpkdlogo.png",
-                            width=200,
-                            height=200,
+                            src="iitpkd_logo3.png",
+                            width=1200,
+                            height=1200,
+                            fit=ImageFit.CONTAIN
                         ),
                     ),
-                    Column(
-                        controls=[
-                            Container(height=50),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Group Members: ",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Shelar Parth Vijay - 142301033",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Shreesh Amit Chembeti - 132301032",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                            Container(
-                                margin=padding.all(0),
-                                content=Text(
-                                    "Tanishq Chandra - 142301035",
-                                    size=20,
-                                    color=colors.GREEN_600,
-                                ),
-                            ),
-                        ],
+                Container(height=20),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Group Members: ",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
                     ),
-                ],
-                spacing=1,
-            ),
-            Container(
-                height=50
-            ),
-            Container(
-                content=Text(
-                    "This is an Android app named 'Expense Tracker' created by us for 'Introduction to Programming' course Project 2024",
-                    size=20,
-                    color=colors.GREEN_600,
-                )
-            ),
-        ]
-    )
-
+                ),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Shelar Parth Vijay - 142301033",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
+                    ),
+                ),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Shreesh Amit Chembeti - 132301032",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
+                    ),
+                ),
+                Container(
+                    margin=padding.all(0),
+                    content=Text(
+                        "Tanishq Chandra - 142301035",
+                        size=20,
+                        color=colors.WHITE,
+                        text_align='center'
+                    ),
+                ),
+                Container(height=5),
+                Container(
+                    content=Text(
+                        "This is an Android app named 'Expense Tracker' created by us for 'Introduction to Programming' course Project 2024",
+                        size=20,
+                        color=colors.WHITE,
+                    )
+                ),
+                Container(height=30),
+            ],
+        )
+        )
 
 
 
@@ -539,7 +536,7 @@ def main(page:Page):
             ],
             on_dismiss=lambda e: print("Dialog dismissed!"),
         )
-        page.views[0].dialog = dialog
+        page.dialog = dialog
         dialog.open = True
         page.update()
 
@@ -583,6 +580,9 @@ def main(page:Page):
         category_index = category_list.index(category)
         category_input.value = category_list[category_index]
         category_color_dropdown.value = category_colors[category_index]
+        # if category_input.value and category_color_dropdown.value:
+        #     if category_input.value in category_list:
+        #         show_duplicate2_dialog(category_input.value)
 
         def update_category(e):
             new_category = category_input.value[:10]
@@ -590,16 +590,18 @@ def main(page:Page):
 
             if new_color in color_options:
                 new_color_index = color_options.index(new_color)
-            else:
-                new_color_index = int(new_color)
-            old_data=(category_list[category_index],category_colors[category_index]) 
-            category_list[category_index] = new_category
-            category_colors[category_index] = color_options[new_color_index]
-            new_data=(category_list[category_index],category_colors[category_index])
-            database.edit_category(old_data,new_data) #update db file through sqlite3
-            update_dropdown()
-            # Rebuild the entire category container
-            rebuild_category_container()
+                if new_category in category_list:
+                    show_duplicate_dialog(new_category)
+                else:
+                    # Only update category name if it's not a duplicate
+                    old_data = (category_list[category_index], category_colors[category_index]) 
+                    category_list[category_index] = new_category
+                    category_colors[category_index] = color_options[new_color_index]
+                    new_data = (category_list[category_index], category_colors[category_index])
+                    database.edit_category(old_data, new_data) #update db file through sqlite3
+                    update_dropdown()
+                    # Rebuild the entire category container
+                    rebuild_category_container()
 
             category_input.value = ""
             category_color_dropdown.value = None
@@ -608,6 +610,22 @@ def main(page:Page):
         category_input.on_submit = update_category
         category_input.focus()  # Set focus to the text field
         page.update()
+
+#     def show_duplicate2_dialog(category):
+#         global dialog
+#         dialog = AlertDialog(
+#             title=Text("Duplicate Category"),
+#             content=Text(f"The category '{category}' has already been used."),
+#             actions=[
+#                 IconButton(on_click=lambda _: close_dialog(), icon=icons.CLOSE_ROUNDED, 
+# #                           alignment=alignment.top_right
+#                            )
+#             ],
+#             on_dismiss=lambda e: print("Dialog dismissed!"),
+#         )
+#         page.dialog = dialog
+#         dialog.open = True
+#         page.update()
 
     def edit_expense(category,amount,date):
         EditData_Contents.controls[0].content.controls[1].controls[0].value=category
@@ -626,36 +644,54 @@ def main(page:Page):
         Input_Amount.focus()
         page.update()
     def delete_category(category):
-        category_index = category_list.index(category)
+        if len(category_list)==2:
+            show_last_category_dialog(category)
+        else:
+            category_index = category_list.index(category)
+            def confirm_delete(choice):
+                if choice == 'yes':
+                    x=category_list.pop(category_index)
+                    y=category_colors.pop(category_index)
+                    database.delete_category(x,y)
+                    update_dropdown()
+                    # Remove the corresponding controls from the category_container
+                    for index, control in enumerate(category_container.controls):
+                        if isinstance(control, Container) and control.content.controls[1].value == category:
+                            category_container.controls.pop(index)
+                            break
+                dialog.open = False  # Hide the dialog box after clicking "Yes" or "No"
 
-        def confirm_delete(choice):
-            if choice == 'yes':
-                x=category_list.pop(category_index)
-                y=category_colors.pop(category_index)
-                database.delete_category(x,y)
-                update_dropdown()
-                # Remove the corresponding controls from the category_container
-                for index, control in enumerate(category_container.controls):
-                    if isinstance(control, Container) and control.content.controls[1].value == category:
-                        category_container.controls.pop(index)
-                        break
-            dialog.open = False  # Hide the dialog box after clicking "Yes" or "No"
+                page.update()
 
+            dialog = AlertDialog(
+                title=Text("Delete Category"),
+                content=Text(f"Are you sure you want to delete the category '{category}'?"),
+                actions=[
+                    TextButton("No", on_click=lambda _: (confirm_delete('no'))),
+                    TextButton("Yes", on_click=lambda _: (confirm_delete('yes')))
+                ],
+                on_dismiss=lambda e: print("Dialog dismissed!"),
+            )
+
+            page.dialog = dialog
+            dialog.open = True
             page.update()
 
-        dialog = AlertDialog(
-            title=Text("Delete Category"),
-            content=Text(f"Are you sure you want to delete the category '{category}'?"),
-            actions=[
-                TextButton("No", on_click=lambda _: (confirm_delete('no'))),
-                TextButton("Yes", on_click=lambda _: (confirm_delete('yes')))
-            ],
-            on_dismiss=lambda e: print("Dialog dismissed!"),
-        )
-
-        page.dialog = dialog
-        dialog.open = True
-        page.update()
+    def show_last_category_dialog(category):
+            global dialog
+            dialog = AlertDialog(
+                title=Text("last Category"),
+                content=Text(f"you cannot delete '{category}' as it is the last category"),
+                actions=[
+                    IconButton(on_click=lambda _: close_dialog(), icon=icons.CLOSE_ROUNDED, 
+    #                           alignment=alignment.top_right
+                            )
+                ],
+                on_dismiss=lambda e: print("Dialog dismissed!"),
+            )
+            page.dialog = dialog
+            dialog.open = True
+            page.update()
     
     def rebuild_category_container():
         category_container.controls.clear()
@@ -1138,7 +1174,7 @@ def main(page:Page):
                                               on_change=lambda e:changedrawertab(e),
                                                 controls=[
                                                 Divider(thickness=2,color=colors.WHITE12),
-                                                Text(value="Welcome "+ database.get_username()+" !",color=colors.WHITE,text_align='center'),  #username
+                                                Text(value="",color=colors.WHITE,text_align='center'),  #username
                                                 Divider(thickness=2,color=colors.WHITE12),
                                                 NavigationDrawerDestination(
                                                         label="Budget",
@@ -1195,15 +1231,38 @@ def main(page:Page):
                 AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:page.go("/"),tooltip='Go back'),#on long press do nothing/dismiss
                                           bgcolor=CG,
                                           title=Text('About us',size=20))),
-            '/Login':View('/Login',[Container(padding=20,bgcolor=colors.GREY_900,expand=True,
-                                            animate=animation.Animation(600, AnimationCurve.DECELERATE),
-                            content=Column(
-                                alignment=MainAxisAlignment.CENTER,
-                                horizontal_alignment=CrossAxisAlignment.CENTER,
-                                controls=[Text(value='Login Page',text_align='center',size=60,color=colors.GREEN_600,weight=FontWeight.BOLD),
-                                    Input_username,
-                                ]
-                            ))])
+            '/Login':View('/Login',[
+                Container(
+                    padding=20,
+                    bgcolor=colors.GREY_900,
+                    expand=True,
+                    animate=animation.Animation(600, AnimationCurve.DECELERATE),
+                    content=Column(
+                        alignment=MainAxisAlignment.CENTER,
+                        horizontal_alignment=CrossAxisAlignment.CENTER,
+                        controls=[
+                            Container(
+                                padding=20,
+                                bgcolor=colors.GREEN_900,
+                                opacity=1,
+                                border_radius=10,
+                                content=Column(
+                                    controls=[
+                                        Text(
+                                            value='Login Page',
+                                            text_align='center',
+                                            size=60,
+                                            color=colors.WHITE,
+                                            weight=FontWeight.BOLD,
+                                        ),
+                                        Input_username,
+                                    ]
+                                )
+                            )
+                        ]
+                    )
+                )
+            ])
                 }
     
     def go_back_tomainpage():
@@ -1305,6 +1364,7 @@ def main(page:Page):
         database.submit_username(Input_username.value)
         page.views.clear()
         page.views.append(pages['/'])
+        pages['/'].end_drawer.controls[1].value="Welcome "+database.get_username()+" !"
         page.views[-1].padding=0 
         build_editdata()
         show_daily_analysis(date)
@@ -1322,6 +1382,7 @@ def main(page:Page):
     else:
         page.views.clear()
         page.views.append(pages['/'])
+        pages['/'].end_drawer.controls[1].value="Welcome "+database.get_username()+" !"
         page.views[-1].padding=0 
         build_editdata()
         show_daily_analysis(date)
