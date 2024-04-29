@@ -246,4 +246,3 @@ def sumofmonth(month):
 
 # check_username(ConnectToDatabase())
 # print(show_weekly_expense(ConnectToDatabase(),1))
-

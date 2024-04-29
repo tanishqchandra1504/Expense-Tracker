@@ -22,7 +22,7 @@ def daily_piechart(date):
     normal_radius = 100
     hover_radius = 110
     normal_title_style = ft.TextStyle(
-        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.NORMAL,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
+        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
     )
     hover_title_style = ft.TextStyle(
         size=14,
@@ -80,7 +80,7 @@ def home_piechart(date):
     normal_radius = 100
     hover_radius = 110
     normal_title_style = ft.TextStyle(
-        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.NORMAL,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
+        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
     )
     hover_title_style = ft.TextStyle(
         size=16,
@@ -134,7 +134,7 @@ def home_piechart(date):
         legends.content.controls.append(
             ft.Row(controls=[
                 ft.Container(
-                content=ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN,controls=[ft.Text(value=cat),ft.Text(value=cat_dict[cat][0])]),
+                content=ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN,controls=[ft.Text(value=cat,color="black"),ft.Text(value=cat_dict[cat][0],color="black")]),
                 bgcolor=cat_dict[cat][1],
                 padding=ft.padding.only(top=3,bottom=3,left=20,right=10),
                 border_radius=5,
@@ -143,7 +143,7 @@ def home_piechart(date):
                 )
             ]))
 
-    chartofday=ft.Text("Pie of the Day:",color="white",size=25,weight=ft.FontWeight.BOLD)
+    chartofday=ft.Text("Pie of the Day:",color="white",size=20,weight=ft.FontWeight.BOLD)
 
     totalsofday=ft.Column(expand=False,height=100,controls=[
                                         ft.Container(bgcolor=ft.colors.TRANSPARENT,expand=True,content=ft.Row(
@@ -236,7 +236,7 @@ def monthly_linechart(mmyyyy):
             labels=[
             ],
             labels_size=32,
-            title=ft.Text("Days of month",weight=ft.FontWeight.BOLD,italic=True)
+            title=ft.Text("DAYS OF MONTH",weight=ft.FontWeight.BOLD,italic=True)
         ),
         tooltip_bgcolor=ft.colors.with_opacity(0.8, ft.colors.BLUE_GREY),
         min_y=0,
@@ -329,7 +329,7 @@ def weekly_linechart(weekno):
             labels=[
             ],
             labels_size=32,
-            title=ft.Text("Weekdays",weight=ft.FontWeight.BOLD,italic=True)
+            title=ft.Text("WEEKDAYS",weight=ft.FontWeight.BOLD,italic=True)
         ),
         tooltip_bgcolor=ft.colors.with_opacity(0.8, ft.colors.BLUE_GREY),
         min_y=0,
@@ -362,5 +362,5 @@ def weekly_linechart(weekno):
         chart.update()
 
     return ft.Container(expand=True,content=ft.Column(controls=[
-        ft.IconButton(ft.icons.REFRESH, on_click=toggle_data), chart
+        ft.IconButton(ft.icons.REFRESH, on_click=toggle_data),chart
     ]))
