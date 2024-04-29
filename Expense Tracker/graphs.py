@@ -52,7 +52,7 @@ def daily_piechart(date):
         piechart.sections.append(
             ft.PieChartSection(
                     value=amtclr[0],
-                    title=cat+f" - {amtclr[0]}",
+                    title=cat+f"-{amtclr[0]/totalamt*100}"[:5]+"%",
                     title_position=1,
                     title_style=normal_title_style,
                     color=amtclr[1],

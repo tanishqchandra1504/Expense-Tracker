@@ -6,9 +6,10 @@ import graphs
 from copy import deepcopy
 #FEEL FREE TO CHANGE COLOURS
 
-#add these sums across analysis pages too
-#all of the categories cannot be deleted
+#insert[-1] in show_ananlysis functions
 #disconnect textfields and dropdowns of add page and edit page
+# duplicate category throught edit
+#all of the categories cannot be deleted
 #clear dropdowns when changed route
 
 weekno=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
@@ -19,10 +20,6 @@ def main(page:Page):
     FG = '#3450a1'
     PINK = '#eb06ff'
     CG='#201D1D'
-
-    bglist=[colors.GREY_900,colors.GREY_100]
-    cardlist=[colors.GREEN_600,colors.GREEN_900]
-    textlist=[colors.WHITE,colors.BLACK87]
 
     color_options = [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF',
@@ -180,6 +177,7 @@ def main(page:Page):
                                                 Column(#analysis list
                                                     controls=[
                                                         #elements will be appended here
+                                                        Container(height=100)
                                                     ]
                                                     
                                                 )
@@ -818,13 +816,14 @@ def main(page:Page):
     def show_daily_analysis(date):
         Analysis_Contents.controls[0].content.controls[2].content=graphs.daily_piechart(date)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
-        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofday(date)) if database.sumofday(date)!=False else "0.0"),weight=FontWeight.NORMAL,color=colors.GREEN_ACCENT_700,size=20)]))
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofday(date)) if database.sumofday(date)!=False else "0.0"),weight=FontWeight.NORMAL,color=colors.LIGHT_GREEN,size=20)]))
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
                 controls=[
                     Container(
                         expand=True,
                         height=50,
+                        padding=padding.only(top=20),
                         # color=FG,
                         content=(
                             Row(
@@ -852,16 +851,14 @@ def main(page:Page):
                                                                     Container(
                                                                         expand=True,
                                                                         height=30,
-                                                                        border=border.all(0.85, BG),
-                                                                        border_radius=8,
-                                                                        bgcolor=colors.GREEN_600,
+                                                                        bgcolor=colors.TRANSPARENT,
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+cat,color="white",size=20),
-                                                                                    Text(str(cat_dict[cat][0]) + "    ",color="white",size=20)
+                                                                                    Text("    "+cat,color=cat_dict[cat][1],size=20),
+                                                                                    Text(str(cat_dict[cat][0]) + "    ",color=cat_dict[cat][1],size=20)
                                                                                     
                                                                                 ]
                                                                             )
@@ -872,13 +869,14 @@ def main(page:Page):
                                                                 
                                                             ),
                 )
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Container(height=30))
         page.update()
 
     def show_weekly_analysis(week):
         #week is week number
         Analysis_Contents.controls[0].content.controls[2].content=graphs.weekly_linechart(week)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
-        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofweek(week))),weight=FontWeight.NORMAL,color=colors.GREEN_ACCENT_700,size=20)]))
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofweek(week))),weight=FontWeight.NORMAL,color=colors.LIGHT_GREEN,size=20)]))
 
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
@@ -886,6 +884,7 @@ def main(page:Page):
                     Container(
                         expand=True,
                         height=50,
+                        padding=padding.only(top=20),
                         #color=colors.GREEN_600,
                         content=(
                             Row(
@@ -906,19 +905,17 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
-                                                                    Card(
+                                                                    Container(
                                                                         expand=True,
-                                                                        height=50,
-                                                                        # border=border.all(0.85, "white54"),
-                                                                        # border_radius=8,
-                                                                        color=colors.GREEN_600,
+                                                                        height=30,
+                                                                        bgcolor=colors.TRANSPARENT,
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+cat,color="white",size=20),
-                                                                                    Text(str(cat_dict[cat][0]) + "    ",color="white",size=20)
+                                                                                    Text("    "+cat,color=cat_dict[cat][1],size=20),
+                                                                                    Text(str(cat_dict[cat][0]) + "    ",color=cat_dict[cat][1],size=20)
                                                                                     
                                                                                 ]
                                                                             )
@@ -929,19 +926,20 @@ def main(page:Page):
                                                                 
                                                             ),
                 )
-        pass
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Container(height=30))
 
     def show_monthly_analysis(month):
         #month is "mm yyyy"
         Analysis_Contents.controls[0].content.controls[2].content=graphs.monthly_linechart(month)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
-        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofmonth(month))),weight=FontWeight.NORMAL,color=colors.GREEN_ACCENT_700,size=20)]))
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofmonth(month))),weight=FontWeight.NORMAL,color=colors.LIGHT_GREEN,size=20)]))
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
                 controls=[
                     Container(
                         expand=True,
                         height=50,
+                        padding=padding.only(top=20),
                         # color=FG,
                         content=(
                             Row(
@@ -962,19 +960,17 @@ def main(page:Page):
             Analysis_Contents.controls[0].content.controls[3].controls.append(
                     Row(
                                                                 controls=[
-                                                                    Card(
+                                                                    Container(
                                                                         expand=True,
-                                                                        height=50,
-                                                                        # border=border.all(0.85, "white54"),
-                                                                        # border_radius=8,
-                                                                        color=colors.GREEN_600,
+                                                                        height=30,
+                                                                        bgcolor=colors.TRANSPARENT,
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                                                                 controls=[
                                                                                     #cate color, cate name, amount
-                                                                                    Text("    "+cat,color="white",size=20),
-                                                                                    Text(str(cat_dict[cat][0]) + "    ",color="white",size=20)
+                                                                                    Text("    "+cat,color=cat_dict[cat][1],size=20),
+                                                                                    Text(str(cat_dict[cat][0]) + "    ",color=cat_dict[cat][1],size=20)
                                                                                     
                                                                                 ]
                                                                             )
@@ -985,6 +981,7 @@ def main(page:Page):
                                                                 
                                                             ),
                 )
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Container(height=30))
 
     def change_analysis_format():
         if analysis_dropdown.value=="Day":
@@ -1277,16 +1274,17 @@ def main(page:Page):
         #clear dropdowns and textfields function?
 
         if page.route=='/':
-            update_chart()
-            build_editdata()
-            show_daily_analysis(date)
-            rebuild_category_container()
-
-
             page.views.clear()
             page.views.append(
             pages['/']
             )
+            update_chart()
+            build_editdata()
+            change_analysis_format()
+            rebuild_category_container()
+
+
+
         else:
             page.views.clear()
             page.views.append(
@@ -1297,9 +1295,8 @@ def main(page:Page):
         page.update()
 
     def view_pop(view):
-        page.views.pop()
-        top_view = page.views[-1]
-        page.go(top_view.route)
+        if page.route!='/':
+            page.go('/')
 
 #####################################################################################################################
     
@@ -1338,5 +1335,6 @@ def main(page:Page):
     page.overlay.extend([date_picker1,date_picker2])
 
     page.theme=Theme(color_scheme_seed=colors.GREEN_600)
+    page.update()
 
 flet.app(target=main)
