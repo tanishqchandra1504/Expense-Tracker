@@ -22,7 +22,7 @@ def daily_piechart(date):
     normal_radius = 100
     hover_radius = 110
     normal_title_style = ft.TextStyle(
-        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
+        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.NORMAL,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
     )
     hover_title_style = ft.TextStyle(
         size=14,
@@ -80,7 +80,7 @@ def home_piechart(date):
     normal_radius = 100
     hover_radius = 110
     normal_title_style = ft.TextStyle(
-        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
+        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.NORMAL,shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
     )
     hover_title_style = ft.TextStyle(
         size=16,
