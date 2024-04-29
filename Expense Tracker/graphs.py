@@ -114,7 +114,7 @@ def home_piechart(date):
         piechart.sections.append(
             ft.PieChartSection(
                     value=amtclr[0],
-                    title=f"{amtclr[0]/totalamt*100}"[:4]+"%",
+                    title=cat+f"-{amtclr[0]/totalamt*100}"[:4]+"%",
                     title_position=1.3,
                     title_style=normal_title_style,
                     color=amtclr[1],
@@ -143,16 +143,32 @@ def home_piechart(date):
                 )
             ]))
 
-    # legendchart=ft.Container(
-    #     expand=True,
-    #     content=ft.Column(
-    #         controls=[
-    #             piechart,
-    #             legends
-    #         ]
-    #     )
-    # )
-    return [piechart,legends]
+    chartofday=ft.Text("Pie of the Day:",color="white",size=25,weight=ft.FontWeight.BOLD)
+
+    totalsofday=ft.Column(expand=False,height=100,controls=[
+                                        ft.Container(bgcolor=ft.colors.TRANSPARENT,expand=True,content=ft.Row(
+                                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                            controls=[
+                                                ft.Text(value="Total expense today : ",color=ft.colors.WHITE,size=18,italic=True),
+                                                ft.Text(value=str(database.sumofday(date) if database.sumofday(date)!=False else 0)+" ",color=ft.colors.WHITE,size=20,italic=True),
+                                            ]
+                                        )),
+                                        ft.Container(bgcolor=ft.colors.TRANSPARENT,expand=True,content=ft.Row(
+                                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                            controls=[
+                                                ft.Text(value="Total expense this week : ",color=ft.colors.WHITE,size=18,italic=True),
+                                                ft.Text(value=str(database.sumofweek(database.get_week_no(date)))+" ",color=ft.colors.WHITE,size=20,italic=True),
+                                            ]
+                                        )),
+                                        ft.Container(bgcolor=ft.colors.TRANSPARENT,expand=True,content=ft.Row(
+                                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                            controls=[
+                                                ft.Text(value="Total expense this month : ",color=ft.colors.WHITE,size=18,italic=True),
+                                                ft.Text(value=str(database.sumofmonth(date[3:]))+" ",color=ft.colors.WHITE,size=20,italic=True),
+                                            ]
+                                        )),])
+
+    return [chartofday,piechart,legends,ft.Divider(height=50,thickness=2,color="grey600"),totalsofday,ft.Container(height=25)]
 
 class State:
     toggle = True

@@ -6,6 +6,9 @@ import graphs
 from copy import deepcopy
 #FEEL FREE TO CHANGE COLOURS
 
+#major error -> allows strings in input amount
+# colors of dropdown
+weekno=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
 
 def main(page:Page):
     BG = '#041955'

@@ -9,7 +9,6 @@ from copy import deepcopy
 
 weekno=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
 def main(page:Page):
-    global categoris_dropdown
     BG = '#041955'
     FWG = '#97b4ff'
     FG = '#3450a1'
@@ -96,7 +95,7 @@ def main(page:Page):
         for i in range(week):
             date1=date1+datetime.timedelta(7)
         date2=date1+datetime.timedelta(6)
-        date1,date2=date1.strftime("%d/%m/%y"),date2.strftime("%d/%m/%y")
+        date1,date2=date1.strftime("%d/%m/%Y"),date2.strftime("%d/%m/%Y")
         daterange=date1+' - '+date2
         return daterange
 #####################################################################################################################

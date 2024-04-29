@@ -3,10 +3,15 @@ from flet import *
 import datetime
 import database
 import graphs
- 
+from copy import deepcopy
 #FEEL FREE TO CHANGE COLOURS
 
+#add these sums across analysis pages too
+#all of the categories cannot be deleted
+#disconnect textfields and dropdowns of add page and edit page
+#clear dropdowns when changed route
 
+weekno=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
 
 def main(page:Page):
     BG = '#041955'
@@ -14,9 +19,6 @@ def main(page:Page):
     FG = '#3450a1'
     PINK = '#eb06ff'
     CG='#201D1D'
-
-
-    
 
     bglist=[colors.GREY_900,colors.GREY_100]
     cardlist=[colors.GREEN_600,colors.GREEN_900]
@@ -27,6 +29,7 @@ def main(page:Page):
         '#FFA500', '#800080', '#008000', '#800000', '#008080', '#808000',
         '#A52A2A', '#000080', '#808080', '#FFC0CB', '#800000', '#FF4500'
     ]
+
     color_names = [
         'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta',
         'Orange', 'Purple', 'Dark Green', 'Maroon', 'Teal', 'Olive',
@@ -37,10 +40,12 @@ def main(page:Page):
             dropdown.Option(color_options[i], color_names[i]) for i in range(len(color_options))
         ]
 
-    category_input = TextField(hint_text="Enter new category",color=colors.GREEN_600, expand=True, on_submit=lambda _:add_category())
+    category_input = TextField(hint_text="Enter new category...(max 10 characters)",color=colors.GREEN_600, expand=True, on_submit=lambda _:add_category())
     category_color_dropdown = Dropdown(
         width=125,
         options=dropdown_options,
+        color=colors.GREEN_600,
+        bgcolor=colors.GREY_900,
         )
     
     
@@ -53,26 +58,34 @@ def main(page:Page):
     categoris_dropdown=Dropdown(
         width=125,
         options=[dropdown.Option(category_list[i]) for i in range(len(category_list))],
+        color=colors.GREEN_600,
+        bgcolor=colors.GREY_900,
         # on_change=lambda _: print(categoris_dropdown.value)
         )
     
     analysis_dropdown=Dropdown(
         width=100,
         options=[dropdown.Option("Day"),dropdown.Option("Week"),dropdown.Option("Month")],
-        on_change=lambda _ : change_analysis_format(),color=textlist[0]
+        on_change=lambda _ : change_analysis_format(),#color=textlist[0],
+        color=colors.GREEN_600,
+        bgcolor=colors.GREY_900,
     )   
 
+   #text field for EditData page
     Input_Amount=TextField(hint_text="Enter amount", expand=True, on_submit=lambda _:add_expense(),color=colors.GREEN_600)
+    #text field for AddData page
     Input_Amount1=TextField(hint_text="Enter amount", expand=True, on_submit=lambda _:add_expense1(),color=colors.GREEN_600)
+    #text field for login page
+    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit(),color=colors.GREEN_600)
+
     editdata_list=ListView(
         controls=[
-
+            #list of containers displaying expense entries will be appended here
         ]
     )
+
     date=datetime.datetime.now().strftime("%d %m %Y")
     month=date[3:5]
-
-    Input_username=TextField(hint_text="Enter username...",on_submit=lambda _:username_submit(),color=cardlist[0],height=210)
 #####################################################################################################################
 # initializing pages
     category_container = ListView(
@@ -103,19 +116,20 @@ def main(page:Page):
     # Home_Page_Contents.controls[0].content.controls=graphs.home_piechart(date)
     Home_Page_Contents=Row(                                                         #DAILY GRAPHS WILL APPEAR IN HOME PAGE
         controls=[Container(expand=True,
-                        bgcolor = bglist[0],
-                        padding=padding.only(top=50,left=20,
+                        bgcolor = colors.GREY_900,
+                        padding=padding.only(top=10,left=20,
                                 right=20,bottom=5),
                                 content=ListView(
                                     padding=0,
-                                    controls=graphs.home_piechart(date),
+                                    controls=graphs.home_piechart(date)
                                 )
                                         )
                                     ]
                                 )
+
     Analysis_Daily_Contents=Row(
             controls=[Container(expand=True,
-                                bgcolor=bglist[0],
+                                bgcolor=colors.GREY_900,
                                 padding=padding.only(top=10,left=20,right=20,bottom=5),
                                 content=ListView(auto_scroll=False,controls=[
                                                 Row(
@@ -133,13 +147,13 @@ def main(page:Page):
                                                         Card(
                                                             width=210,
                                                             height=50,
-                                                            color=bglist[0],
+                                                            color=colors.GREY_900,
                                                             content=(
                                                                 Row(
                                                                     controls=[
                                                                         IconButton(
                                                                             width=30,
-                                                                            content=Icon(icons.ARROW_BACK_IOS,color=cardlist[0]),
+                                                                            content=Icon(icons.ARROW_BACK_IOS,color=colors.GREEN_600),
                                                                             on_click=lambda _ : previous_date(),
                                                                         ),
                                                                         TextButton(
@@ -150,7 +164,7 @@ def main(page:Page):
                                                                         ),
                                                                         IconButton(
                                                                             width=30,
-                                                                            content=Icon(icons.ARROW_FORWARD_IOS,color=cardlist[0]),
+                                                                            content=Icon(icons.ARROW_FORWARD_IOS,color=colors.GREEN_600),
                                                                             on_click=lambda _ : next_date(),
                                                                         )
                                                                     ]
@@ -160,8 +174,7 @@ def main(page:Page):
                                                 ]),
 
                                                 Container(#graph here
-                                                            padding=30,
-                                                            content=graphs.daily_piechart(date)
+                                                            padding=0,
                                                         ),
 
                                                 Column(#analysis list
@@ -178,7 +191,7 @@ def main(page:Page):
 
     Analysis_Weekly_Contents=Row(
         controls=[Container(expand=True,
-                            bgcolor=bglist[0],
+                            bgcolor=colors.GREY_900,
                             padding=padding.only(top=10,left=20,right=20,bottom=5),
                             content=ListView(auto_scroll=False,controls=[
                                             Row(
@@ -196,25 +209,21 @@ def main(page:Page):
                                                     Card(
                                                         # width=210,
                                                         height=50,
-                                                        color=bglist[0],
+                                                        color=colors.GREY_900,
                                                         content=(
                                                             Row(
                                                                 controls=[
                                                                     IconButton(
                                                                         width=30,
-                                                                        content=Icon(icons.ARROW_BACK_IOS,color=cardlist[0]),
+                                                                        content=Icon(icons.ARROW_BACK_IOS,color=colors.GREEN_600),
                                                                         on_click=lambda _ : previous_week(),
                                                                     ),
-                                                                    TextButton(
-                                                                        width=120,
-                                                                        content=Text(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))),
-                                                                        on_click=lambda _: _,
-                                                                        visible=False
-                                                                    ),
-                                                                    Text(get_week_dates(database.get_week_no(datetime.datetime.today().strftime("%d %m %Y"))),color=cardlist[0]),
+
+                                                                    Text(get_week_dates(weekno),color=colors.WHITE),
+
                                                                     IconButton(
                                                                         width=30,
-                                                                        content=Icon(icons.ARROW_FORWARD_IOS,color=cardlist[0]),
+                                                                        content=Icon(icons.ARROW_FORWARD_IOS,color=colors.GREEN_600),
                                                                         on_click=lambda _ : next_week(),
                                                                     )
                                                                 ]
@@ -244,7 +253,7 @@ def main(page:Page):
     
     Analysis_Monthly_Contents=Row(
         controls=[Container(expand=True,
-                            bgcolor=bglist[0],
+                            bgcolor=colors.GREY_900,
                             padding=padding.only(top=10,left=20,right=20,bottom=5),
                             content=ListView(auto_scroll=False,controls=[
                                             Row(
@@ -262,18 +271,18 @@ def main(page:Page):
                                                     Card(
                                                         width=210,
                                                         height=50,
-                                                        color=bglist[0],
+                                                        color=colors.GREY_900,
                                                         content=(
                                                             Row(
                                                                 controls=[
                                                                     IconButton(
                                                                         width=30,
-                                                                        content=Icon(icons.ARROW_BACK_IOS,color=cardlist[0]),
+                                                                        content=Icon(icons.ARROW_BACK_IOS,color=colors.GREEN_600),
                                                                         on_click=lambda _ : previous_month(),
                                                                     ),
                                                                     TextButton(
                                                                         width=120,
-                                                                        content=Text("uselesstext"),#Text((datetime.datetime.now().strftime("%m %Y"))),
+                                                                        content=Text("uselesstext",color=colors.WHITE),#Text((datetime.datetime.now().strftime("%m %Y"))),
                                                                         on_click=lambda _: page.show_bottom_sheet(CupertinoBottomSheet(CupertinoActionSheet(
                                                                             title=Text("Select month"),
                                                                             cancel=CupertinoActionSheetAction(
@@ -314,11 +323,12 @@ def main(page:Page):
             ]
         )
     
-    Analysis_Contents=Analysis_Daily_Contents
+    Analysis_Contents=deepcopy(Analysis_Daily_Contents)
+
     AddData_Contents=Row(                                                   #PARTH CODE FOR PLUS BUTTON IN HOME SCREEN
             controls=[Container(expand=True,
-                        bgcolor=bglist[0],
-                        padding=padding.only(top=50, left=20,
+                        bgcolor=colors.GREY_900,
+                        padding=padding.only(top=10, left=20,
                                             right=20, bottom=5),
                         content=Column(controls=[
                             Row(alignment=MainAxisAlignment.CENTER,
@@ -327,8 +337,8 @@ def main(page:Page):
                                     width=150,
                                     height=40,
                                     elevation=1,
-                                    color=bglist[0],
-                                    content=Text(value=datetime.datetime.today().strftime('%d/%m/%Y'),color=cardlist[0],text_align=TextAlign.CENTER,weight=FontWeight.BOLD,size=20),
+                                    color=colors.GREY_900,
+                                    content=Text(value=datetime.datetime.today().strftime('%d/%m/%Y'),color=colors.GREEN_600,text_align=TextAlign.CENTER,weight=FontWeight.BOLD,size=20),
                                 )
                             ]
                             ),
@@ -345,13 +355,14 @@ def main(page:Page):
 
     Category_contents=Row(                                                             #TANISHQ CODE + PARTH SQL CODE HERE
         controls=[Container(expand=True,
-                        bgcolor=bglist[0],
-                        padding=padding.only(top=50,left=20,
+                        bgcolor=colors.GREY_900,
+                        padding=padding.only(top=10,left=20,
                                 right=20,bottom=5),
                                 content=Column(controls=[
                                Row(
                                    controls=[category_color_dropdown, category_input]),
-                               category_container
+                               category_container,
+                               
                            ]
                         )
                                         )
@@ -360,8 +371,8 @@ def main(page:Page):
     
     EditData_Contents=Row(                                                        #PARTH CODE FOR EDIT DATA PAGE
         controls=[Container(expand=True,
-                           bgcolor=bglist[0],
-                           padding=padding.only(top=50, left=20,
+                           bgcolor=colors.GREY_900,
+                           padding=padding.only(top=10, left=20,
                                                right=20, bottom=5),
                            content=ListView(controls=[
                                 Row(#date picker
@@ -370,7 +381,7 @@ def main(page:Page):
                                     Card(
                                         width=210,
                                         height=50,
-                                        color=bglist[0],
+                                        color=colors.GREY_900,
                                         content=(
                                             Row(
                                                 controls=[
@@ -402,7 +413,7 @@ def main(page:Page):
                                 ]
                             ),
 
-                            Divider(color=BG,height=10,thickness=2),
+                            Divider(color=colors.BLACK,height=10,thickness=2),
 
                             editdata_list,
                            ]
@@ -411,13 +422,13 @@ def main(page:Page):
                   ]
               )
     budget_contents=Container(
-        bgcolor=bglist[0]
+        bgcolor=colors.GREY_900
     )
 
     Settings_Contents=Row(
         controls=[Container(expand=True,
-                           bgcolor=bglist[0],
-                           padding=padding.only(top=50, left=20,
+                           bgcolor=colors.GREY_900,
+                           padding=padding.only(top=10, left=20,
                                                right=20, bottom=5),
                            content=Column(controls=[
                                Row(
@@ -434,7 +445,7 @@ def main(page:Page):
                 controls=[
                     Container(
                         expand=True,
-                        bgcolor=bglist[0],
+                        bgcolor=colors.GREY_900,
                         content=Image(
                             src="iitpkdlogo.png",
                             width=200,
@@ -502,7 +513,7 @@ def main(page:Page):
 #####################################################################################################################
 
     def add_category():
-        new_category = category_input.value
+        new_category = category_input.value[:10]
         new_color = category_color_dropdown.value
         if new_category and new_color:
             if new_category in category_list:
@@ -540,7 +551,7 @@ def main(page:Page):
         page.update()
 
     def add_category_row(category, color):
-        category_container.controls.append(Container(bgcolor=cardlist[0], border_radius=15, padding=5, content=
+        category_container.controls.insert(-1,Container(bgcolor=colors.GREEN_600, border_radius=15, padding=5, content=
             Row(
                 alignment='spaceBetween',
                 controls=[
@@ -576,7 +587,7 @@ def main(page:Page):
         category_color_dropdown.value = category_colors[category_index]
 
         def update_category(e):
-            new_category = category_input.value
+            new_category = category_input.value[:10]
             new_color = category_color_dropdown.value
 
             if new_color in color_options:
@@ -650,6 +661,7 @@ def main(page:Page):
     
     def rebuild_category_container():
         category_container.controls.clear()
+        category_container.controls.append(Container(height=30))
         for category, color in zip(category_list, category_colors):
             add_category_row(category, color)
 
@@ -657,24 +669,46 @@ def main(page:Page):
     def add_expense():
         category=EditData_Contents.controls[0].content.controls[1].controls[0].value
         amount=Input_Amount.value
-        date=EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value
-        database.insert_expense((category,amount,date))
-        add_editdata_row(database.get_category_color(category),category,amount,date)
-        #reset the dropdown and texfield
-        EditData_Contents.controls[0].content.controls[1].controls[0].value=None
-        Input_Amount.value=None
-        page.update()
+        try:
+            amount=float(amount)
+            if amount<0:
+                open_error_snackbar()
+                return 
+            date=EditData_Contents.controls[0].content.controls[0].controls[0].content.controls[1].content.value
+            database.insert_expense((category,amount,date))
+            add_editdata_row(database.get_category_color(category),category,amount,date)
+            open_snackbar_addedexpense()
+        except Exception as exp:
+            print("exception",exp)
+            open_error_snackbar()
+        finally:
+            #reset the dropdown and texfield
+            EditData_Contents.controls[0].content.controls[1].controls[0].value=None
+            Input_Amount.value=None
+            page.update()
     
     def add_expense1():
         category=AddData_Contents.controls[0].content.controls[1].controls[0].value
-        amount=AddData_Contents.controls[0].content.controls[1].controls[1].value
-        date=datetime.datetime.today().strftime("%d %m %Y")
-        database.insert_expense((category,amount,date))
-        Input_Amount1.value=None
-        AddData_Contents.controls[0].content.controls[1].controls[0].value=None
-        open_snackbar_addedexpense()
-        page.update()
+        amount=Input_Amount1.value
+        try:
+            amount=float(amount)
+            if amount<0:
+                open_error_snackbar()
+                return 
+            date=datetime.datetime.today().strftime("%d %m %Y")
+            database.insert_expense((category,amount,date))
+            open_snackbar_addedexpense()
+        except Exception as exp:
+            print("exception",exp)
+            open_error_snackbar()
+        finally:
+            Input_Amount1.value=None
+            AddData_Contents.controls[0].content.controls[1].controls[0].value=None
+            page.update()
 
+    def open_error_snackbar():
+        page.snack_bar=SnackBar(content=Text("Incorrect data type entered! Enter a positive real number"),duration=3000,behavior=SnackBarBehavior.FLOATING,show_close_icon=True)
+        page.snack_bar.open=True
     def open_snackbar_addedexpense():
         page.snack_bar=SnackBar(content=Text("Expense Added Successfully!"),duration=3000,
                                behavior=SnackBarBehavior.FLOATING,show_close_icon=True)
@@ -694,8 +728,8 @@ def main(page:Page):
                         margin=margin.only(right=10)
                     ),
 
-                    Text(category, color=cardlist[0],size=20),
-                    Text(amount, color=cardlist[0],size=20),
+                    Text(category, color=colors.GREEN_600,size=20),
+                    Text(amount, color=colors.GREEN_600,size=20),
                     Row(
                         controls=[
                             IconButton(
@@ -721,9 +755,11 @@ def main(page:Page):
 
     def update_dropdown():
         new_dropdown=Dropdown(
-        width=125,
+        width=175,
         options=[dropdown.Option(category_list[i]) for i in range(len(category_list))],
         # on_change=lambda _: print(new_dropdown.value)
+        color=colors.GREEN_600,
+        bgcolor=colors.GREY_900,
         )
         AddData_Contents.controls[0].content.controls[1].controls[0]=new_dropdown
         EditData_Contents.controls[0].content.controls[1].controls[0]=new_dropdown
@@ -782,6 +818,7 @@ def main(page:Page):
     def show_daily_analysis(date):
         Analysis_Contents.controls[0].content.controls[2].content=graphs.daily_piechart(date)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofday(date)) if database.sumofday(date)!=False else "0.0"),weight=FontWeight.NORMAL,color=colors.GREEN_ACCENT_700,size=20)]))
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
                 controls=[
@@ -793,8 +830,8 @@ def main(page:Page):
                             Row(
                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                 controls=[
-                                    Text("  categories",italic=True,color=cardlist[0],size=20,),
-                                    Text("amount    ",italic=True,color=cardlist[0],size=20,)
+                                    Text("  categories",italic=True,color=colors.GREEN_600,size=20,),
+                                    Text("amount    ",italic=True,color=colors.GREEN_600,size=20,)
                                 ]
                             )
                         )
@@ -803,6 +840,7 @@ def main(page:Page):
             )
         )
 
+        # Analysis_Contents.controls[0].content.controls[3].controls.append(Container(expand=True,height=40,content=Row(expand=True,controls=[Text(value="Total expense is "+ str(database.sumofday(date)),weight=FontWeight.BOLD,color=colors.RED_ACCENT)])))
         Analysis_Contents.controls[0].content.controls[3].controls.append(Divider(thickness=3,color=colors.GREEN_900))
 
         cat_dict=database.show_categorywise_daily_expense(date)
@@ -816,7 +854,7 @@ def main(page:Page):
                                                                         height=30,
                                                                         border=border.all(0.85, BG),
                                                                         border_radius=8,
-                                                                        bgcolor=cardlist[0],
+                                                                        bgcolor=colors.GREEN_600,
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -837,21 +875,24 @@ def main(page:Page):
         page.update()
 
     def show_weekly_analysis(week):
+        #week is week number
         Analysis_Contents.controls[0].content.controls[2].content=graphs.weekly_linechart(week)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofweek(week))),weight=FontWeight.NORMAL,color=colors.GREEN_ACCENT_700,size=20)]))
+
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
                 controls=[
                     Container(
                         expand=True,
                         height=50,
-                        #color=cardlist[0],
+                        #color=colors.GREEN_600,
                         content=(
                             Row(
                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                 controls=[
-                                    Text("  categories",italic=True,color=cardlist[0],size=20),
-                                    Text("amount    ",italic=True,color=cardlist[0],size=20)
+                                    Text("  categories",italic=True,color=colors.GREEN_600,size=20),
+                                    Text("amount    ",italic=True,color=colors.GREEN_600,size=20)
                                 ]
                             )
                         )
@@ -870,7 +911,7 @@ def main(page:Page):
                                                                         height=50,
                                                                         # border=border.all(0.85, "white54"),
                                                                         # border_radius=8,
-                                                                        color=cardlist[0],
+                                                                        color=colors.GREEN_600,
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -891,8 +932,10 @@ def main(page:Page):
         pass
 
     def show_monthly_analysis(month):
+        #month is "mm yyyy"
         Analysis_Contents.controls[0].content.controls[2].content=graphs.monthly_linechart(month)
         Analysis_Contents.controls[0].content.controls[3].controls.clear()
+        Analysis_Contents.controls[0].content.controls[3].controls.append(Row(controls=[Text(value="* Total expense is "+ (str(database.sumofmonth(month))),weight=FontWeight.NORMAL,color=colors.GREEN_ACCENT_700,size=20)]))
         Analysis_Contents.controls[0].content.controls[3].controls.append(
             Row(
                 controls=[
@@ -904,8 +947,8 @@ def main(page:Page):
                             Row(
                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
                                 controls=[
-                                    Text("  categories",italic=True,size=20,color=cardlist[0]),
-                                    Text("amount    ",italic=True,size=20,color=cardlist[0])
+                                    Text("  categories",italic=True,size=20,color=colors.GREEN_600),
+                                    Text("amount    ",italic=True,size=20,color=colors.GREEN_600)
                                 ]
                             )
                         )
@@ -924,7 +967,7 @@ def main(page:Page):
                                                                         height=50,
                                                                         # border=border.all(0.85, "white54"),
                                                                         # border_radius=8,
-                                                                        color=cardlist[0],
+                                                                        color=colors.GREEN_600,
                                                                         content=(
                                                                             Row(
                                                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -950,8 +993,7 @@ def main(page:Page):
             show_daily_analysis(datetime.datetime.now().strftime("%d %m %Y"))
         if analysis_dropdown.value=="Week":
             Analysis_Contents.controls[0]=Analysis_Weekly_Contents.controls[0]
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y")))
+            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].value=get_week_dates(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y")))
             show_weekly_analysis(database.get_week_no(datetime.datetime.now().strftime("%d %m %Y")))
 
         if analysis_dropdown.value=="Month":
@@ -1004,18 +1046,20 @@ def main(page:Page):
             page.update()
 
     def previous_week():
-        prvweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value-1
+        global weekno
+        prvweek=weekno-1
         if (prvweek)>=0:
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=prvweek
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(prvweek)
+            weekno=prvweek
+            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].value=get_week_dates(prvweek)
             show_weekly_analysis(prvweek)
         page.update()
 
     def next_week():
-        nextweek=Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value+1
+        global weekno
+        nextweek=weekno+1
         if database.get_week_no(datetime.datetime.now().strftime("%d %m %Y"))>=nextweek>=0:
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].content.value=nextweek
-            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[2].value=get_week_dates(nextweek)
+            weekno=nextweek 
+            Analysis_Contents.controls[0].content.controls[1].controls[0].content.controls[1].value=get_week_dates(nextweek)
             show_weekly_analysis(nextweek)
         page.update()
 
@@ -1079,11 +1123,11 @@ def main(page:Page):
                             )
     
 
-    
+
 #####################################################################################################################
 
     pages={'/':View('/',[Initial_Page],floating_action_button = FloatingActionButton(icon=icons.ADD_OUTLINED,
-                                        bgcolor=cardlist[0],
+                                        bgcolor=colors.GREEN_600,
                                                       #foreground_color=colors.BLACK,
                                         shape=CircleBorder(),
                                         width=50,
@@ -1097,7 +1141,7 @@ def main(page:Page):
                                               on_change=lambda e:changedrawertab(e),
                                                 controls=[
                                                 Divider(thickness=2,color=colors.WHITE12),
-                                                Text(value='Parth Add the name here',text_align='center'),
+                                                Text(value="Welcome "+ database.get_username()+" !",color=colors.WHITE,text_align='center'),  #username
                                                 Divider(thickness=2,color=colors.WHITE12),
                                                 NavigationDrawerDestination(
                                                         label="Budget",
@@ -1128,46 +1172,47 @@ def main(page:Page):
                          )
                 ),
            '/AddData_Contents':View('/AddData_Contents',[Container(expand=True,
-                                                 bgcolor=cardlist[0],
+                                                 bgcolor=colors.GREEN_600,
                                                  content=AddData_Contents)],
                                         AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:go_back_tomainpage(),tooltip='Go back'),#on long press do nothing/dismiss
                                                 bgcolor=CG,
                                                 title=Text('Expense today',size=20))),
             '/Budget':View('/Budget',[Container(
                 expand=True,
-                bgcolor=bglist[0],
+                bgcolor=colors.GREY_900,
                 content=budget_contents)],
                 AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:page.go("/"),tooltip='Go back'),#on long press do nothing/dismiss
                                           bgcolor=CG,
                                           title=Text('Monthly Budget',size=20))),                                                
             '/Settings':View('/Settings',[Container(
                 expand=True,
-                bgcolor=bglist[0],
+                bgcolor=colors.GREY_900,
                 content=Settings_Contents)],
                 AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:page.go("/"),tooltip='Go back'),#on long press do nothing/dismiss
                                           bgcolor=CG,
                                           title=Text('Settings',size=20))),
             '/About_us':View('/About_us',[Container(
                 expand=True,
-                bgcolor=bglist[0],
+                bgcolor=colors.GREY_900,
                 content=About_us_contents)],
                 AppBar(leading=IconButton(icon=icons.ARROW_BACK,on_click=lambda _:page.go("/"),tooltip='Go back'),#on long press do nothing/dismiss
                                           bgcolor=CG,
                                           title=Text('About us',size=20))),
-            '/Login':View('/Login',[Container(padding=20,bgcolor=bglist[0],expand=True,
+            '/Login':View('/Login',[Container(padding=20,bgcolor=colors.GREY_900,expand=True,
                                             animate=animation.Animation(600, AnimationCurve.DECELERATE),
                             content=Column(
                                 alignment=MainAxisAlignment.CENTER,
                                 horizontal_alignment=CrossAxisAlignment.CENTER,
-                                controls=[Text(value='Login Page',text_align='center',size=60,color=cardlist[0],weight=FontWeight.BOLD),
+                                controls=[Text(value='Login Page',text_align='center',size=60,color=colors.GREEN_600,weight=FontWeight.BOLD),
                                     Input_username,
                                 ]
                             ))])
                 }
+    
     def go_back_tomainpage():
         page.go("/")
         page.update()
-    
+
     def update_chart():
         Home_Page_Contents.controls[0].content.controls=graphs.home_piechart(date)
 
@@ -1213,6 +1258,7 @@ def main(page:Page):
             EditData_Page.visible = False
 
         page.update()
+
     def changedrawertab(e):
         my_drawer_index = e.control.selected_index
 
@@ -1228,6 +1274,8 @@ def main(page:Page):
             page.go('/About_us')
         
     def change_route(route):
+        #clear dropdowns and textfields function?
+
         if page.route=='/':
             update_chart()
             build_editdata()
@@ -1240,10 +1288,10 @@ def main(page:Page):
             pages['/']
             )
         else:
+            page.views.clear()
             page.views.append(
                 pages[page.route]
                 )
-
             
         page.views[-1].padding=0 #permanently sets page padding to zero even when pages are changed
         page.update()

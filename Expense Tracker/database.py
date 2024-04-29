@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+import datetime
 # Date,time,week = datetime.now().strftime("%d %m %Y"),datetime.now().strftime("%H:%M:%S"),datetime.now().strftime("%V")
 # print(Date,week,time)
 
@@ -48,6 +48,14 @@ def submit_username(name):
     c.execute("INSERT INTO username VALUES(?)",(name,))
     conn.commit()
     conn.close()
+
+def get_username():
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("SELECT * FROM username")
+    name=c.fetchone()
+    name=name[0]
+    return name
 
 def show_all_categories():
     conn=ConnectToDatabase()
@@ -204,15 +212,35 @@ def input_colors():
         c.execute("UPDATE expenses SET color=(?) WHERE category_name=(?)",(clr,cat))
     conn.commit()
     conn.close()
+
 def sumofday(date):
     conn=ConnectToDatabase()
     c=conn.cursor()
     c.execute("SELECT amount FROM expenses WHERE Date=(?)",(date,))
     items=c.fetchall()
+    conn.close()
     if len(items)==0:
         return False
     daysum=sum(x[0] for x in items)
     return daysum
+
+def sumofweek(weekno):
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("SELECT amount FROM expenses WHERE Week=(?)",(weekno,))
+    items=c.fetchall()
+    conn.close()
+    weeksum=sum(x[0] for x in items)
+    return weeksum
+
+def sumofmonth(month):
+    conn=ConnectToDatabase()
+    c=conn.cursor()
+    c.execute("SELECT amount FROM expenses WHERE SUBSTR(Date,4,7)=(?)",(month,))
+    items=c.fetchall()
+    conn.close()
+    monthsum=sum(x[0] for x in items)
+    return monthsum
 # input_colors()
 # print(get_category_color(ConnectToDatabase(),"Cat1"))
 
