@@ -41,7 +41,7 @@ Visit this [drive](https://drive.google.com/drive/folders/1VMevyuCZ9yiDP2DO4XGEn
    flet run [Expense_Tracker]
    ```
 
-### Usage
+## Usage
 
 - Input your expense with categories.
 - With graphical insights on Home page and Analysis Page.
